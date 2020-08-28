@@ -1,0 +1,3 @@
+- `20200107update_csv_origin`: the original datasets supplied by ZhuTi technology.
+- `20200107update_csv_align_time`: align the end timestamp of all stations to the same `0831`
+- `20200107update_csv`: the current used data, delete the variable `TD2` in the local station dataset as I don't know what does it mean. In addition this variable does not be selected by my `feature selection` module and thus is not important.  
