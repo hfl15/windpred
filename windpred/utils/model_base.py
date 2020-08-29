@@ -26,7 +26,7 @@ class DefaultConfig(object):
     norm = 'submean'
     x_divide_std = True
 
-    n_epochs = 100
+    n_epochs = 1000
     n_runs = 10
 
     obs_data_path_list, nwp_path = get_files_path()
@@ -54,11 +54,14 @@ class BasePredictor(BaseEstimator):
         callbacks = None
         if set_cb:
             reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
-                factor=0.5, patience=3, min_lr=0.0001, mode='min', verbose=self.verbose)
-            es = tf.keras.callbacks.EarlyStopping(patience=6, mode='min', verbose=self.verbose)
+                factor=0.5, patience=5, min_lr=0.0001, mode='min', verbose=self.verbose)
+            es = tf.keras.callbacks.EarlyStopping(patience=50, mode='min', verbose=self.verbose,
+                                                  restore_best_weights=True)
             callbacks = [reduce_lr, es]
 
-        self.model.compile(loss='mse', optimizer='adam')
+        op = tf.optimizers.RMSprop(learning_rate=0.001)
+        self.model.compile(loss='mse', optimizer=op)
+        # self.model.compile(loss='mse', optimizer='adam')
         self.history = self.model.fit(x, y,
                                       batch_size=batch_size,
                                       epochs=n_epochs,
@@ -288,57 +291,4 @@ def reduce_multiple_splits_dir(path, csvf_list, col_name='all_mae'):
     reduce_multiple_splits(path, csvf_list, col_name)
 
 
-"""
-    for data parser
-"""
 
-
-def get_features_list(station_name_list, features_in):
-    features = []
-    if features_in is None:
-        features = [[] for _ in range(len(station_name_list))]
-    elif type(features_in) == list:
-        features = [features_in for _ in range(len(station_name_list))]
-    elif type(features_in) == dict:
-        for station_name in station_name_list:
-            features.append(features_in[station_name])
-    else:
-        raise ValueError("No any operation accords with features_in={}".format(features_in))
-    return features
-
-
-def get_data_spatial(data_generator, target, features_list, n_stations):
-    def get_station(station_idx):
-        features_nwp = [feat for feat in features_list[station_idx] if 'NWP' in feat]
-        features_station = [feat for feat in features_list[station_idx] if feat not in features_nwp]
-        y_attributes = ['{}_S{}'.format(target, station_idx)]
-        x_attributes = ['{}_S{}'.format(f, station_idx) for f in features_station] + features_nwp
-        (x_train, y_train), (x_val, y_val), (x_test, y_test) = \
-            data_generator.extract_training_data(
-                x_attributes=x_attributes, y_attributes=y_attributes)
-        return (x_train, y_train), (x_val, y_val), (x_test, y_test)
-
-    x_train_list, x_val_list, x_test_list = [], [], []
-    y_train_list, y_val_list, y_test_list = [], [], []
-    for i in range(n_stations):
-        (x_train, y_train), (x_val, y_val), (x_test, y_test) = get_station(i)
-        x_train_list.append(x_train)
-        x_val_list.append(x_val)
-        x_test_list.append(x_test)
-        y_train_list.append(y_train)
-        y_val_list.append(y_val)
-        y_test_list.append(y_test)
-
-    return (x_train_list, y_train_list), (x_val_list, y_val_list), (x_test_list, y_test_list)
-
-
-def get_evaluation_data_spatial(data_generator, target, n_stations):
-    nwp, obs_list, speed_list, filter_big_wind_list = None, [], [], []
-    for i in range(n_stations):
-        target_i = '{}_S{}'.format(target, i)
-        speed, nwp, obs, filter_big_wind = data_generator.extract_evaluation_data(target_i)
-        obs_list.append(obs)
-        speed_list.append(speed)
-        filter_big_wind_list.append(filter_big_wind)
-
-    return nwp, obs_list, speed_list, filter_big_wind_list
