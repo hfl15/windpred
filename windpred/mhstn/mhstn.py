@@ -61,7 +61,7 @@ class SpatialModuleCNN(BasePredictor):
 
     def build_model(self):
         inp = tf.keras.layers.Input(self.input_shape)
-        h = tf.keras.layers.Conv1D(64, 5, activation='relu')(inp)  # inp.shape[1].value*n_stations*2
+        h = tf.keras.layers.Conv1D(64, 5, activation='relu')(inp)  # inp.shape[1]*n_stations*2
         h = tf.keras.layers.MaxPool1D()(h)
         h = tf.keras.layers.Flatten()(h)
         output = tf.keras.layers.Dense(self.units_output)(h)
@@ -78,8 +78,8 @@ class SpatialModuleCNNFull(BasePredictor):
 
     def build_model(self):
         inp = tf.keras.layers.Input(self.input_shape)
-        n_channels = inp.shape[2].value
-        h = tf.keras.layers.Conv1D(inp.shape[1].value*n_channels*2, inp.shape[1].value, activation='relu')(inp)
+        n_channels = inp.shape[2]
+        h = tf.keras.layers.Conv1D(inp.shape[1]*n_channels*2, inp.shape[1], activation='relu')(inp)
         h = tf.keras.layers.Flatten()(h)
         output = tf.keras.layers.Dense(self.units_output)(h)
         model = tf.keras.models.Model(inp, output)
