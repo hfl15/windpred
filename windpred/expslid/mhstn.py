@@ -13,7 +13,7 @@ if __name__ == '__main__':
     target = 'SPD10'
     features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
 
-    mode = 'spatial_mlp'
+    mode = 'spatial-conv_full'
 
     csv_result_list = []
 

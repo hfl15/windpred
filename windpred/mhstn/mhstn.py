@@ -271,7 +271,7 @@ def main(target, mode, eval_mode, config, tag, features_history, features_future
             data_generator_spatial.prepare_data(target_size,
                                                 train_step=train_step, test_step=test_step, single_step=single_step)
             batch_run(n_runs, dir_log_exp,
-                      lambda dir_log_curr: spatial_module(mode.split('_')[-1], station_name_list, dir_log_curr,
+                      lambda dir_log_curr: spatial_module(mode.split('-')[-1], station_name_list, dir_log_curr,
                                                           data_generator_spatial, target, n_epochs,
                                                           features_history, features_future))
     elif mode.startswith('reduce'):
