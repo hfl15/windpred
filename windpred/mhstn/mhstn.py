@@ -46,7 +46,7 @@ class SpatialModuleMLP(BasePredictor):
 
     def build_model(self):
         inp = tf.keras.layers.Input(self.input_shape)
-        h = tf.keras.layers.Dense(inp.shape[1].value, activation='relu')(inp)
+        h = tf.keras.layers.Dense(inp.shape[1], activation='relu')(inp)
         output = tf.keras.layers.Dense(self.units_output)(h)
         model = tf.keras.models.Model(inp, output)
         return model
@@ -106,6 +106,7 @@ def get_data_spatial_output(station_name_list, dir_log, data_generator, target,
     y_pred_train_list = []
     y_pred_val_list = []
     y_pred_test_list = []
+    from IPython import embed; embed()
     for i_station, station_name in enumerate(station_name_list):
         model = tf.keras.models.load_model(
             os.path.join(dir_log, '{}_{}.hdf5'.format(station_name, tag_temporal)))
@@ -275,6 +276,9 @@ def main(target, mode, eval_mode, config, tag, features_history, features_future
                                                           features_history, features_future))
     elif mode.startswith('reduce'):
         reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list)
+
+    else:
+        raise ValueError("mode = {} can not be found!".format(mode))
 
 
 
