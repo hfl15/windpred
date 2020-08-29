@@ -38,17 +38,6 @@ class DefaultConfig(object):
 """
 
 
-def concatenate_data(d1, d2):
-    if type(d1) == list:
-        d = []
-        for d1_, d2_ in zip(d1, d2):
-            d_ = np.concatenate([d1_, d2_], axis=0)
-            d.append(d_)
-    else:
-        d = np.concatenate([d1, d2], axis=0)
-    return d
-
-
 class BasePredictor(BaseEstimator):
     def __init__(self, input_shape, units_output=24, verbose=1, name='base'):
         self.input_shape = input_shape
@@ -165,7 +154,6 @@ def run(data_generator_list, cls_model, dir_log, target, n_epochs,
         x_train_list, x_val_list, x_test_list,
         y_train_list, y_val_list, y_test_list,
         input_shape, tag_file=None, save_model=False):
-    from IPython import embed; embed()
     file_suffix = "" if tag_file is None else '_'+tag_file
     evaluator_model = Evaluator(dir_log, 'model'+file_suffix)
     evaluator_nwp = Evaluator(dir_log, 'nwp'+file_suffix)
