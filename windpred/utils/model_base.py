@@ -38,6 +38,17 @@ class DefaultConfig(object):
 """
 
 
+def concatenate_data(d1, d2):
+    if type(d1) == list:
+        d = []
+        for d1_, d2_ in zip(d1, d2):
+            d_ = np.concatenate([d1_, d2_], axis=0)
+            d.append(d_)
+    else:
+        d = np.concatenate([d1, d2], axis=0)
+    return d
+
+
 class BasePredictor(BaseEstimator):
     def __init__(self, input_shape, units_output=24, verbose=1, name='base'):
         self.input_shape = input_shape
@@ -59,9 +70,8 @@ class BasePredictor(BaseEstimator):
                                                   restore_best_weights=True)
             callbacks = [reduce_lr, es]
 
-        op = tf.optimizers.RMSprop(learning_rate=0.001)
+        op = tf.optimizers.Adam(learning_rate=0.001)
         self.model.compile(loss='mse', optimizer=op)
-        # self.model.compile(loss='mse', optimizer='adam')
         self.history = self.model.fit(x, y,
                                       batch_size=batch_size,
                                       epochs=n_epochs,
@@ -155,34 +165,34 @@ def run(data_generator_list, cls_model, dir_log, target, n_epochs,
         x_train_list, x_val_list, x_test_list,
         y_train_list, y_val_list, y_test_list,
         input_shape, tag_file=None, save_model=False):
-    evaluator_model = Evaluator(dir_log, 'model')
-    evaluator_nwp = Evaluator(dir_log, 'nwp')
+    from IPython import embed; embed()
+    file_suffix = "" if tag_file is None else '_'+tag_file
+    evaluator_model = Evaluator(dir_log, 'model'+file_suffix)
+    evaluator_nwp = Evaluator(dir_log, 'nwp'+file_suffix)
     for i_station, data_generator in enumerate(data_generator_list):
         station_name = data_generator.station_name
+
         x_train, x_val, x_test = x_train_list[i_station], x_val_list[i_station], x_test_list[i_station]
         y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
 
-        model = cls_model(input_shape, name='{}'.format(station_name))
+        model = cls_model(input_shape, name=(station_name+file_suffix))
         model.fit(x_train, y_train, n_epochs=n_epochs, validation_data=(x_val, y_val))
-        model.plot_train_history(dir_log, 'train_loss_{}'.format(station_name))
+        model.plot_train_history(dir_log, ('train_loss'+'_'+station_name+file_suffix))
 
         y_pred = model.predict(x_test).ravel()
         if data_generator.norm is not None:
             y_pred = data_generator.normalizer.inverse_transform(target, y_pred)
         speed, nwp, obs, filter_big_wind = data_generator.extract_evaluation_data(target)
-        plot_and_save_comparison(obs, y_pred, dir_log, filename='compare_{}.png'.format(station_name))
+        plot_and_save_comparison(obs, y_pred, dir_log, filename='compare_{}.png'.format(station_name+file_suffix))
         evaluator_model.append(obs, y_pred, filter_big_wind, key=station_name)
         evaluator_nwp.append(obs, nwp, filter_big_wind, key=station_name)
 
         if save_model:
             model.save(dir_log)
-        suffix = station_name
-        if tag_file is not None:
-            suffix += '_' + tag_file
-        np.savetxt(os.path.join(dir_log, 'y_pred_{}.txt'.format(suffix)), y_pred)
-        np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(suffix)), model.predict(x_train))
-        np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(suffix)), model.predict(x_val))
-        np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(suffix)), model.predict(x_test))
+        np.savetxt(os.path.join(dir_log, 'y_pred_{}.txt'.format(station_name+file_suffix)), y_pred)
+        np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(station_name+file_suffix)), model.predict(x_train))
+        np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(station_name+file_suffix)), model.predict(x_val))
+        np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(station_name+file_suffix)), model.predict(x_test))
 
 
 def reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list):
