@@ -98,15 +98,14 @@ def temporal_module(data_generator_list, dir_log, target, n_epochs,
         x_train_list, x_val_list, x_test_list, y_train_list, y_val_list, y_test_list, input_shape, tag_func, save_model)
 
 
-def get_data_spatial_output(station_name_list, dir_log, data_generator, target,
-                            features_history, features_future, tag_temporal):
+def get_temporal_module_output(station_name_list, dir_log, data_generator_spatial, target,
+                               features_history, features_future, tag_temporal):
     x_train_list, x_val_list, x_test_list, y_train_list, y_val_list, y_test_list = get_data_spatial(
-        data_generator, station_name_list, target, features_history, features_future)
+        data_generator_spatial, station_name_list, target, features_history, features_future)
 
     y_pred_train_list = []
     y_pred_val_list = []
     y_pred_test_list = []
-    from IPython import embed; embed()
     for i_station, station_name in enumerate(station_name_list):
         model = tf.keras.models.load_model(
             os.path.join(dir_log, '{}_{}.hdf5'.format(station_name, tag_temporal)))
@@ -124,11 +123,11 @@ def get_data_spatial_output(station_name_list, dir_log, data_generator, target,
     return x_train, x_val, x_test, y_train_list, y_val_list, y_test_list
 
 
-def get_data_spatial_hidden(station_name_list, dir_log, data_generator, target,
-                            features_history, features_future, tag_temporal):
+def get_temporal_module_hidden(station_name_list, dir_log, data_generator_spatial, target,
+                               features_history, features_future, tag_temporal):
     n_stations = len(station_name_list)
     x_train_list, x_val_list, x_test_list, y_train_list, y_val_list, y_test_list = get_data_spatial(
-        data_generator, station_name_list, target, features_history, features_future)
+        data_generator_spatial, station_name_list, target, features_history, features_future)
 
     model_list = []
     for i_station, station_name in enumerate(station_name_list):
@@ -151,8 +150,8 @@ def get_data_spatial_hidden(station_name_list, dir_log, data_generator, target,
 def get_data_spatial_mlp(station_name_list, dir_log, data_generator, target,
                          features_history, features_future, tag_temporal):
     hidden_train_list, hidden_val_list, hidden_test_list, y_train_list, y_val_list, y_test_list = \
-        get_data_spatial_hidden(station_name_list, dir_log, data_generator, target, features_history, features_future,
-                                tag_temporal)
+        get_temporal_module_hidden(station_name_list, dir_log, data_generator, target, features_history, features_future,
+                                   tag_temporal)
     x_train = np.hstack(hidden_train_list)
     x_val = np.hstack(hidden_val_list)
     x_test = np.hstack(hidden_test_list)
@@ -163,8 +162,8 @@ def get_data_spatial_conv(station_name_list, dir_log, data_generator, target,
                           features_history, features_future, tag_temporal):
 
     hidden_train_list, hidden_val_list, hidden_test_list, y_train_list, y_val_list, y_test_list = \
-        get_data_spatial_hidden(station_name_list, dir_log, data_generator, target, features_history, features_future,
-                                tag_temporal)
+        get_temporal_module_hidden(station_name_list, dir_log, data_generator, target, features_history, features_future,
+                                   tag_temporal)
 
     def concat(val_list):
         ret = val_list.copy()
@@ -187,7 +186,7 @@ def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_e
 
     if mode == 'output':
         cls_model = CombinerDense
-        get_data_func = get_data_spatial_output
+        get_data_func = get_temporal_module_output
     elif mode == 'mlp':
         cls_model = SpatialModuleMLP
         get_data_func = get_data_spatial_mlp
@@ -228,6 +227,76 @@ def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_e
         np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(file_suffix)), model.predict(x_train))
         np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(file_suffix)), model.predict(x_val))
         np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(file_suffix)), model.predict(x_test))
+
+
+def combine_module(tag_spatial):
+    def _combine_module(station_name_list, dir_log, data_generator, target, n_epochs,
+                   features_history, features_future, save_model=False):
+
+        tag_temporal = temporal_module.__name__
+        tag_func = '{}_{}'.format(combine_module.__name__, tag_spatial)
+        # tag_func = 'combine_module_{}'.format('_'.join(tag_spatial.split('_')[2:]))
+        n_stations = len(station_name_list)
+
+        _, _, _, y_train_list, y_val_list, y_test_list = get_data_spatial(
+            data_generator, station_name_list, target, features_history, features_future)
+        nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target,
+                                                                                      n_stations)
+
+        y_pred_temporal_train_list = []
+        y_pred_temporal_val_list = []
+        y_pred_temporal_test_list = []
+        for i_station, station_name in enumerate(station_name_list):
+            y_pred_tr = np.loadtxt(os.path.join(dir_log, 'y_pred_train_{}_{}.txt'.format(station_name, tag_temporal)))
+            y_pred_val = np.loadtxt(os.path.join(dir_log, 'y_pred_val_{}_{}.txt'.format(station_name, tag_temporal)))
+            y_pred_te = np.loadtxt(os.path.join(dir_log, 'y_pred_test_{}_{}.txt'.format(station_name, tag_temporal)))
+            y_pred_temporal_train_list.append(y_pred_tr)
+            y_pred_temporal_val_list.append(y_pred_val)
+            y_pred_temporal_test_list.append(y_pred_te)
+
+        y_pred_spatial_train_list = []
+        y_pred_spatial_val_list = []
+        y_pred_spatial_test_list = []
+        for i_station, station_name in enumerate(station_name_list):
+            y_pred_tr = np.loadtxt(os.path.join(dir_log, 'y_pred_train_{}_{}.txt'.format(station_name, tag_spatial)))
+            y_pred_val = np.loadtxt(os.path.join(dir_log, 'y_pred_val_{}_{}.txt'.format(station_name, tag_spatial)))
+            y_pred_te = np.loadtxt(os.path.join(dir_log, 'y_pred_test_{}_{}.txt'.format(station_name, tag_spatial)))
+            y_pred_spatial_train_list.append(y_pred_tr)
+            y_pred_spatial_val_list.append(y_pred_val)
+            y_pred_spatial_test_list.append(y_pred_te)
+
+        evaluator_model = Evaluator(dir_log, 'model_{}'.format(tag_func))
+        evaluator_nwp = Evaluator(dir_log, 'nwp_{}'.format(tag_func))
+        for i_station in range(n_stations):
+            station_name = station_name_list[i_station]
+            y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
+            y_com_train = np.hstack([y_pred_temporal_train_list[i_station], y_pred_spatial_train_list[i_station]])
+            y_com_val = np.hstack([y_pred_temporal_val_list[i_station], y_pred_spatial_val_list[i_station]])
+            y_com_test = np.hstack([y_pred_temporal_test_list[i_station], y_pred_spatial_test_list[i_station]])
+
+            combine_model = CombinerDense(y_com_train.shape[1:], name='{}_{}'.format(station_name, tag_func))
+            combine_model.fit(y_com_train, y_train, n_epochs=n_epochs, validation_data=(y_com_val, y_val))
+
+            y_pred = combine_model.predict(y_com_test).ravel()
+            if data_generator.norm is not None:
+                target_curr = '{}_S{}'.format(target, i_station)
+                y_pred = data_generator.normalizer.inverse_transform(target_curr, y_pred)
+
+            obs = obs_list[i_station]
+            filter_big_wind = filter_big_wind_list[i_station]
+            evaluator_model.append(obs, y_pred, filter_big_wind, key=station_name)
+            evaluator_nwp.append(obs, nwp, filter_big_wind, key=station_name)
+
+            if save_model:
+                combine_model.save(dir_log)
+            np.savetxt(os.path.join(dir_log, 'y_pred_{}_{}.txt'.format(station_name, tag_func)), y_pred)
+            np.savetxt(os.path.join(dir_log, 'y_pred_train_{}_{}.txt'.format(station_name, tag_func)),
+                       combine_model.predict(y_com_train))
+            np.savetxt(os.path.join(dir_log, 'y_pred_val_{}_{}.txt'.format(station_name, tag_func)),
+                       combine_model.predict(y_com_val))
+            np.savetxt(os.path.join(dir_log, 'y_pred_test_{}_{}.txt'.format(station_name, tag_func)),
+                       combine_model.predict(y_com_test))
+    return _combine_module
 
 
 def main(target, mode, eval_mode, config, tag, features_history, features_future, csv_result_list=None):
@@ -274,6 +343,19 @@ def main(target, mode, eval_mode, config, tag, features_history, features_future
                       lambda dir_log_curr: spatial_module(mode.split('-')[-1], station_name_list, dir_log_curr,
                                                           data_generator_spatial, target, n_epochs,
                                                           features_history, features_future))
+    elif mode.startswith('combine'):
+        data_generator_spatial = DataGeneratorV2Spatial(period, window, norm=norm, x_divide_std=x_divide_std)
+        for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
+            dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
+            months = get_month_list(eval_mode, wid)
+            data_generator_spatial.set_data(months)
+            data_generator_spatial.prepare_data(target_size,
+                                                train_step=train_step, test_step=test_step, single_step=single_step)
+            combine_module_func = combine_module(mode.split('-')[-1])
+            batch_run(n_runs, dir_log_exp,
+                      lambda dir_log_curr: combine_module_func(
+                          station_name_list, dir_log_curr, data_generator_spatial, target, n_epochs, features_history,
+                          features_future))
     elif mode.startswith('reduce'):
         reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list)
 
