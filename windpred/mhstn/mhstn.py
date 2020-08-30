@@ -229,12 +229,12 @@ def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_e
         np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(file_suffix)), model.predict(x_test))
 
 
-def combine_module(tag_spatial):
+def combine_module(tag_spatial_suffix):
     def _combine_module(station_name_list, dir_log, data_generator, target, n_epochs,
-                   features_history, features_future, save_model=False):
-
+                        features_history, features_future, save_model=False):
         tag_temporal = temporal_module.__name__
-        tag_func = '{}_{}'.format(combine_module.__name__, tag_spatial)
+        tag_spatial = spatial_module.__name__ + '_' + tag_spatial_suffix
+        tag_func = '{}_{}'.format(combine_module.__name__, tag_spatial_suffix)
         # tag_func = 'combine_module_{}'.format('_'.join(tag_spatial.split('_')[2:]))
         n_stations = len(station_name_list)
 
