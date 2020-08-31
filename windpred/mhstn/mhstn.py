@@ -8,7 +8,7 @@ from windpred.utils.model_base import BasePredictor, CombinerDense
 from windpred.utils.model_base import MONTH_LIST, TESTING_SLIDING_WINDOW, get_month_list
 from windpred.utils.model_base import batch_run, run, reduce
 
-from windpred.mhstn.base import get_data_temporal, get_data_spatial, get_evaluation_data_spatial
+from windpred.mhstn.base import get_data_temporal, get_data_spatial, get_evaluation_data_spatial, run_spatial
 from windpred.utils.evaluation import Evaluator
 
 tf, K = get_tf_keras()
@@ -98,8 +98,8 @@ def temporal_module(data_generator_list, dir_log, target, n_epochs,
         x_train_list, x_val_list, x_test_list, y_train_list, y_val_list, y_test_list, input_shape, tag_func, save_model)
 
 
-def get_temporal_module_output(station_name_list, dir_log, data_generator_spatial, target,
-                               features_history, features_future, tag_temporal):
+def get_data_spatial_output(station_name_list, dir_log, data_generator_spatial, target,
+                            features_history, features_future, tag_temporal):
     x_train_list, x_val_list, x_test_list, y_train_list, y_val_list, y_test_list = get_data_spatial(
         data_generator_spatial, station_name_list, target, features_history, features_future)
 
@@ -119,12 +119,13 @@ def get_temporal_module_output(station_name_list, dir_log, data_generator_spatia
     x_train = np.hstack(y_pred_train_list)
     x_val = np.hstack(y_pred_val_list)
     x_test = np.hstack(y_pred_test_list)
+    input_shape = x_train.shape[1:]
 
-    return x_train, x_val, x_test, y_train_list, y_val_list, y_test_list
+    return x_train, x_val, x_test, y_train_list, y_val_list, y_test_list, input_shape
 
 
-def get_temporal_module_hidden(station_name_list, dir_log, data_generator_spatial, target,
-                               features_history, features_future, tag_temporal):
+def get_data_spatial_hidden(station_name_list, dir_log, data_generator_spatial, target,
+                            features_history, features_future, tag_temporal):
     n_stations = len(station_name_list)
     x_train_list, x_val_list, x_test_list, y_train_list, y_val_list, y_test_list = get_data_spatial(
         data_generator_spatial, station_name_list, target, features_history, features_future)
@@ -150,20 +151,21 @@ def get_temporal_module_hidden(station_name_list, dir_log, data_generator_spatia
 def get_data_spatial_mlp(station_name_list, dir_log, data_generator, target,
                          features_history, features_future, tag_temporal):
     hidden_train_list, hidden_val_list, hidden_test_list, y_train_list, y_val_list, y_test_list = \
-        get_temporal_module_hidden(station_name_list, dir_log, data_generator, target, features_history, features_future,
-                                   tag_temporal)
+        get_data_spatial_hidden(station_name_list, dir_log, data_generator, target, features_history, features_future,
+                                tag_temporal)
     x_train = np.hstack(hidden_train_list)
     x_val = np.hstack(hidden_val_list)
     x_test = np.hstack(hidden_test_list)
-    return x_train, x_val, x_test, y_train_list, y_val_list, y_test_list
+    input_shape = x_train.shape[1:]
+    return x_train, x_val, x_test, y_train_list, y_val_list, y_test_list, input_shape
 
 
 def get_data_spatial_conv(station_name_list, dir_log, data_generator, target,
                           features_history, features_future, tag_temporal):
 
     hidden_train_list, hidden_val_list, hidden_test_list, y_train_list, y_val_list, y_test_list = \
-        get_temporal_module_hidden(station_name_list, dir_log, data_generator, target, features_history, features_future,
-                                   tag_temporal)
+        get_data_spatial_hidden(station_name_list, dir_log, data_generator, target, features_history, features_future,
+                                tag_temporal)
 
     def concat(val_list):
         ret = val_list.copy()
@@ -173,8 +175,9 @@ def get_data_spatial_conv(station_name_list, dir_log, data_generator, target,
     x_train = concat(hidden_train_list)
     x_val = concat(hidden_val_list)
     x_test = concat(hidden_test_list)
+    input_shape = x_train.shape[1:]
 
-    return x_train, x_val, x_test, y_train_list, y_val_list, y_test_list
+    return x_train, x_val, x_test, y_train_list, y_val_list, y_test_list, input_shape
 
 
 def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_epochs,
@@ -182,11 +185,11 @@ def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_e
     tag_func = spatial_module.__name__ + '_' + mode
     tag_temporal = temporal_module.__name__
     n_stations = len(station_name_list)
-    nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target, n_stations)
+    # nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target, n_stations)
 
     if mode == 'output':
         cls_model = CombinerDense
-        get_data_func = get_temporal_module_output
+        get_data_func = get_data_spatial_output
     elif mode == 'mlp':
         cls_model = SpatialModuleMLP
         get_data_func = get_data_spatial_mlp
@@ -198,35 +201,38 @@ def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_e
         get_data_func = get_data_spatial_conv
     else:
         raise ValueError("In {}: mode = {} can not be found!".format(spatial_module.__name__, mode))
-    x_train, x_val, x_test, y_train_list, y_val_list, y_test_list = get_data_func(
+    x_train, x_val, x_test, y_train_list, y_val_list, y_test_list, input_shape = get_data_func(
         station_name_list, dir_log, data_generator, target, features_history, features_future, tag_temporal)
 
-    evaluator_model = Evaluator(dir_log, 'model_{}'.format(tag_func))
-    evaluator_nwp = Evaluator(dir_log, 'nwp_{}'.format(tag_func))
-    for i_station in range(n_stations):
-        station_name = station_name_list[i_station]
-        y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
+    run_spatial(station_name_list, cls_model, dir_log, data_generator, target, n_epochs,
+                x_train, x_val, x_test, y_train_list, y_val_list, y_test_list, input_shape, tag_func)
 
-        model = cls_model(x_train.shape[1:], name='{}_{}'.format(station_name, tag_func))
-        model.fit(x_train, y_train, n_epochs=n_epochs, validation_data=(x_val, y_val))
-
-        y_pred = model.predict(x_test).ravel()
-        if data_generator.norm is not None:
-            target_curr = '{}_S{}'.format(target, i_station)
-            y_pred = data_generator.normalizer.inverse_transform(target_curr, y_pred)
-
-        obs = obs_list[i_station]
-        filter_big_wind = filter_big_wind_list[i_station]
-        evaluator_model.append(obs, y_pred, filter_big_wind, key=station_name)
-        evaluator_nwp.append(obs, nwp, filter_big_wind, key=station_name)
-
-        if save_model:
-            model.save(dir_log)
-        file_suffix = '{}_{}'.format(station_name, tag_func)
-        np.savetxt(os.path.join(dir_log, 'y_pred_{}.txt'.format(file_suffix)), y_pred)
-        np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(file_suffix)), model.predict(x_train))
-        np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(file_suffix)), model.predict(x_val))
-        np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(file_suffix)), model.predict(x_test))
+    # evaluator_model = Evaluator(dir_log, 'model_{}'.format(tag_func))
+    # evaluator_nwp = Evaluator(dir_log, 'nwp_{}'.format(tag_func))
+    # for i_station in range(n_stations):
+    #     station_name = station_name_list[i_station]
+    #     y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
+    #
+    #     model = cls_model(x_train.shape[1:], name='{}_{}'.format(station_name, tag_func))
+    #     model.fit(x_train, y_train, n_epochs=n_epochs, validation_data=(x_val, y_val))
+    #
+    #     y_pred = model.predict(x_test).ravel()
+    #     if data_generator.norm is not None:
+    #         target_curr = '{}_S{}'.format(target, i_station)
+    #         y_pred = data_generator.normalizer.inverse_transform(target_curr, y_pred)
+    #
+    #     obs = obs_list[i_station]
+    #     filter_big_wind = filter_big_wind_list[i_station]
+    #     evaluator_model.append(obs, y_pred, filter_big_wind, key=station_name)
+    #     evaluator_nwp.append(obs, nwp, filter_big_wind, key=station_name)
+    #
+    #     if save_model:
+    #         model.save(dir_log)
+    #     file_suffix = '{}_{}'.format(station_name, tag_func)
+    #     np.savetxt(os.path.join(dir_log, 'y_pred_{}.txt'.format(file_suffix)), y_pred)
+    #     np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(file_suffix)), model.predict(x_train))
+    #     np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(file_suffix)), model.predict(x_val))
+    #     np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(file_suffix)), model.predict(x_test))
 
 
 def combine_module(tag_spatial_suffix):
