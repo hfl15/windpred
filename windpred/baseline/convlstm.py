@@ -28,7 +28,7 @@ class ConvLSTM(BasePredictor):
                     shape=self.input_shape
                 ),
                 tf.keras.layers.ConvLSTM2D(
-                    filters=32, kernel_size=(5, 5), padding="same", return_sequences=False
+                    filters=32, kernel_size=(5, 5), padding="same", return_sequences=True
                 ),
                 tf.keras.layers.Flatten(),
                 tf.keras.layers.Dense(self.units_output)

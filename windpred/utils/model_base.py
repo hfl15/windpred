@@ -59,7 +59,7 @@ class BasePredictor(BaseEstimator):
                                                   restore_best_weights=True)
             callbacks = [reduce_lr, es]
 
-        op = tf.optimizers.Adam(learning_rate=0.001)
+        op = tf.keras.optimizers.Adam(learning_rate=0.001)
         self.model.compile(loss='mse', optimizer=op)
         self.history = self.model.fit(x, y,
                                       batch_size=batch_size,
