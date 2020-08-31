@@ -41,12 +41,9 @@ class ConvLSTM(BasePredictor):
 def run_convlstm(station_name_list, dir_log, data_generator_spatial, target, n_epochs,
                  features_history=None, features_future=None, model_name='convlstm'):
     tag_func = model_name
-    # n_stations = len(station_name_list)
 
     x_train_list, x_val_list, x_test_list, y_train_list, y_val_list, y_test_list = get_data_spatial(
         data_generator_spatial, station_name_list, target, features_history, features_future)
-
-    from IPython import embed; embed()
 
     def get_data(x_list):
         res = []
