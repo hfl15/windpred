@@ -44,6 +44,30 @@ class GCNLSTM(BasePredictor):
 
         return model
 
+    def fit(self, x, y,
+            batch_size=32,
+            n_epochs=20,
+            validation_data=None,
+            set_cb=True):
+        callbacks = None
+        if set_cb:
+            reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+                factor=0.5, patience=3, min_lr=0.0001, mode='min', verbose=self.verbose)
+            es = tf.keras.callbacks.EarlyStopping(patience=20, mode='min', verbose=self.verbose,
+                                                  restore_best_weights=True)
+            callbacks = [reduce_lr, es]
+
+        op = tf.keras.optimizers.Adam(learning_rate=0.001)
+        self.model.compile(loss='mse', optimizer=op)
+        self.history = self.model.fit(x, y,
+                                      batch_size=batch_size,
+                                      epochs=n_epochs,
+                                      verbose=self.verbose,
+                                      validation_data=validation_data,
+                                      callbacks=callbacks)
+
+        return self.history.history['loss'][-1], self.history.history['val_loss'][-1]
+
 
 def cal_corr(x, mode='corr'):
     n_notes = x.shape[1]
