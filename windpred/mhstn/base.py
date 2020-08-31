@@ -101,7 +101,7 @@ def run_spatial(station_name_list, cls_model, dir_log, data_generator, target, n
     nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target, n_stations)
 
     evaluator_model = Evaluator(dir_log, 'model'+tag_func)
-    evaluator_nwp = Evaluator(dir_log, 'nwp{}'+tag_func)
+    evaluator_nwp = Evaluator(dir_log, 'nwp'+tag_func)
     for i_station in range(n_stations):
         station_name = station_name_list[i_station]
         y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
