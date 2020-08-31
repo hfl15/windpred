@@ -3,6 +3,17 @@ import numpy as np
 
 from windpred.utils.evaluation import Evaluator
 
+CSV_RESULT_FILES = ['metrics_model_temporal_module.csv', 'metrics_model_spatial_module_output.csv',
+                    'metrics_model_spatial_module_mlp.csv', 'metrics_model_spatial_module_conv_full.csv',
+                    'metrics_model_spatial_module_conv.csv', 'metrics_model_combine_module_output.csv',
+                    'metrics_model_combine_module_mlp.csv', 'metrics_model_combine_module_conv_full.csv',
+                    'metrics_model_combine_module_conv.csv',
+                    'metrics_nwp_temporal_module.csv', 'metrics_nwp_spatial_module_output.csv',
+                    'metrics_nwp_spatial_module_mlp.csv', 'metrics_nwp_spatial_module_conv_full.csv',
+                    'metrics_nwp_spatial_module_conv.csv', 'metrics_nwp_combine_module_output.csv',
+                    'metrics_nwp_combine_module_mlp.csv', 'metrics_nwp_combine_module_conv_full.csv',
+                    'metrics_nwp_combine_module_conv.csv']
+
 
 def get_data_spatial(data_generator, station_name_list, target, features_history_in, features_future_in):
     def _get_station(station_idx, features_history, features_future):
