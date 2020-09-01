@@ -90,7 +90,11 @@ def run_convlstm(station_name_list, dir_log, data_generator_spatial, target, n_e
     n_channels = x_tr.shape[-1]
     input_shape = (seq_len, n_features, 1, n_channels)
 
-    cls_model = ConvLSTM
+    if model_name == 'convlstm':
+        cls_model = ConvLSTM
+    else:
+        raise ValueError("model_name={} can not be found!".format(model_name))
+
     run_spatial(station_name_list, cls_model, dir_log, data_generator_spatial, target, n_epochs,
                 x_tr, x_val, x_te, y_train_list, y_val_list, y_test_list, input_shape, tag_func)
 
