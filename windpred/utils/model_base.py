@@ -254,7 +254,7 @@ TESTING_SLIDING_WINDOW = 6
 
 
 def get_month_list(eval_mode, wid):
-    if eval_mode == 'expslid':
+    if eval_mode == 'slid':
         months = MONTH_LIST[(wid - TESTING_SLIDING_WINDOW):(wid + 1)]
     elif eval_mode == 'inc':
         months = MONTH_LIST[:(wid + 1)]

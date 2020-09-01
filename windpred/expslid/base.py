@@ -1,2 +1,2 @@
-eval_mode = 'expslid'
+eval_mode = 'slid'
 
