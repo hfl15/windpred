@@ -11,10 +11,10 @@ from windpred.expslid.base import eval_mode
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'U10'
+    target = 'V10'
     features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
 
-    mode = 'reduce'
+    mode = 'spatial-output'
 
     csv_result_list = CSV_RESULT_FILES
 
