@@ -12,16 +12,18 @@ if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
     target = 'DIR10'
-    mode_list = ['run-history', 'run-future', 'run-history_future']
+    feature_mode_list = ['history', 'future', 'history_future']
 
     if target == 'DIR10':
-        for mode in mode_list:
+        for mode in feature_mode_list:
             tag_file_list = [None]
-            exp_dir.main('run', eval_mode, os.path.join(tag, mode), tag_file_list)
-            exp_dir.main('reduce', eval_mode, os.path.join(tag, mode), tag_file_list)
+            file_exp_in = os.path.join(tag, mode)
+            exp_dir.main('run', eval_mode, file_exp_in, tag_file_list)
+            exp_dir.main('reduce', eval_mode, file_exp_in, tag_file_list)
     else:
-        for mode in mode_list:
-            temporal_nn.main(tag, DefaultConfig, target, mode, eval_mode, BaseLSTM)
+        mode = 'run'
+        for feature_mode in feature_mode_list:
+            temporal_nn.main(tag, DefaultConfig, target, mode+'-'+feature_mode, eval_mode, BaseLSTM)
 
 
 
