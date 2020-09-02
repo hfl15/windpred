@@ -17,8 +17,8 @@ if __name__ == '__main__':
     if target == 'DIR10':
         for mode in mode_list:
             tag_file_list = [None]
-            exp_dir.main('run', eval_mode, tag, tag_file_list)
-            exp_dir.main('reduce', eval_mode, tag, tag_file_list)
+            exp_dir.main('run', eval_mode, os.path.join(tag, mode), tag_file_list)
+            exp_dir.main('reduce', eval_mode, os.path.join(tag, mode), tag_file_list)
     else:
         for mode in mode_list:
             temporal_nn.main(tag, DefaultConfig, target, mode, eval_mode, BaseLSTM)
