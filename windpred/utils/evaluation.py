@@ -119,7 +119,7 @@ class Evaluator(object):
 
         return res
 
-    def append(self, y, y_pred, filter_big_wind, key=None, flush=True):
+    def append(self, y, y_pred, filter_big_wind, key=None, flush=False):
         metrics = self.evaluate(y, y_pred, filter_big_wind)
         for k, v in metrics.items():
             self.res[k].append(v)
