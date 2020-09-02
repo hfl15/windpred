@@ -69,6 +69,8 @@ def main(mode, eval_mode, file_exp_in, tag_file_list):
         for tag_file in tag_file_list:
             csv = 'metrics_model.csv' if tag_file is None else 'metrics_model_{}.csv'.format(tag_file)
             csv_result_list.append(csv)
+            csv = 'metrics_nwp.csv' if tag_file is None else 'metrics_nwp_{}.csv'.format(tag_file)
+            csv_result_list.append(csv)
         reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list)
 
 
