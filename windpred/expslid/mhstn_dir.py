@@ -1,5 +1,5 @@
 from windpred.mhstn.mhstn import get_tags
-from windpred.expslid.dir import main
+from windpred.utils.exp_dir import main
 from windpred.expslid.base import eval_mode
 
 

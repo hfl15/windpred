@@ -1,2 +1,2 @@
-eval_mode = 'slid'
+eval_mode = 'rolling'
 

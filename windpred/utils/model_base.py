@@ -254,9 +254,9 @@ TESTING_SLIDING_WINDOW = 6
 
 
 def get_month_list(eval_mode, wid):
-    if eval_mode == 'slid':
+    if eval_mode == 'rolling':
         months = MONTH_LIST[(wid - TESTING_SLIDING_WINDOW):(wid + 1)]
-    elif eval_mode == 'inc':
+    elif eval_mode == 'increment':
         months = MONTH_LIST[:(wid + 1)]
     else:
         raise ValueError("eval_mode={} can not be found!".format(eval_mode))

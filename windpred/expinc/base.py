@@ -1,2 +1,2 @@
-eval_mode = 'inc'
+eval_mode = 'increment'
 
