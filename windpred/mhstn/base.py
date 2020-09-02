@@ -105,20 +105,18 @@ def get_evaluation_data_spatial(data_generator, target, n_stations):
 
 def run_spatial(station_name_list, cls_model, dir_log, data_generator, target, n_epochs,
                 x_train, x_val, x_test, y_train_list, y_val_list, y_test_list, input_shape,
-                tag_func=None, save_model=False):
-
-    if tag_func is None:
-        tag_func = ""
+                tag_file=None, save_model=False):
+    file_suffix = "" if tag_file is None else '_' + tag_file
     n_stations = len(station_name_list)
     nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target, n_stations)
 
-    evaluator_model = Evaluator(dir_log, 'model_'+tag_func)
-    evaluator_nwp = Evaluator(dir_log, 'nwp_'+tag_func)
+    evaluator_model = Evaluator(dir_log, 'model'+file_suffix)
+    evaluator_nwp = Evaluator(dir_log, 'nwp'+file_suffix)
     for i_station in range(n_stations):
         station_name = station_name_list[i_station]
         y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
 
-        model = cls_model(input_shape, name='{}_{}'.format(station_name, tag_func))
+        model = cls_model(input_shape, name=(station_name+file_suffix))
         model.fit(x_train, y_train, n_epochs=n_epochs, validation_data=(x_val, y_val))
 
         y_pred = model.predict(x_test).ravel()
@@ -133,8 +131,7 @@ def run_spatial(station_name_list, cls_model, dir_log, data_generator, target, n
 
         if save_model:
             model.save(dir_log)
-        file_suffix = '{}_{}'.format(station_name, tag_func)
-        np.savetxt(os.path.join(dir_log, 'y_pred_{}.txt'.format(file_suffix)), y_pred)
-        np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(file_suffix)), model.predict(x_train))
-        np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(file_suffix)), model.predict(x_val))
-        np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(file_suffix)), model.predict(x_test))
+        np.savetxt(os.path.join(dir_log, 'y_pred_{}.txt'.format(station_name+file_suffix)), y_pred)
+        np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(station_name+file_suffix)), model.predict(x_train))
+        np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(station_name+file_suffix)), model.predict(x_val))
+        np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(station_name+file_suffix)), model.predict(x_test))
