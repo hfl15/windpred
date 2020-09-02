@@ -3,7 +3,7 @@ import os
 from windpred.utils.base import tag_path
 
 from windpred.utils.model_base import DefaultConfig, BaseMLP
-from windpred.baseline.standard_nn import main
+from windpred.baseline.temporal_nn import main
 from windpred.expslid.base import eval_mode
 
 

@@ -184,8 +184,6 @@ def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_e
                    features_history, features_future, save_model=False):
     tag_func = spatial_module.__name__ + '_' + mode
     tag_temporal = temporal_module.__name__
-    n_stations = len(station_name_list)
-    # nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target, n_stations)
 
     if mode == 'output':
         cls_model = CombinerDense
@@ -205,34 +203,7 @@ def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_e
         station_name_list, dir_log, data_generator, target, features_history, features_future, tag_temporal)
 
     run_spatial(station_name_list, cls_model, dir_log, data_generator, target, n_epochs,
-                x_train, x_val, x_test, y_train_list, y_val_list, y_test_list, input_shape, tag_func)
-
-    # evaluator_model = Evaluator(dir_log, 'model_{}'.format(tag_func))
-    # evaluator_nwp = Evaluator(dir_log, 'nwp_{}'.format(tag_func))
-    # for i_station in range(n_stations):
-    #     station_name = station_name_list[i_station]
-    #     y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
-    #
-    #     model = cls_model(x_train.shape[1:], name='{}_{}'.format(station_name, tag_func))
-    #     model.fit(x_train, y_train, n_epochs=n_epochs, validation_data=(x_val, y_val))
-    #
-    #     y_pred = model.predict(x_test).ravel()
-    #     if data_generator.norm is not None:
-    #         target_curr = '{}_S{}'.format(target, i_station)
-    #         y_pred = data_generator.normalizer.inverse_transform(target_curr, y_pred)
-    #
-    #     obs = obs_list[i_station]
-    #     filter_big_wind = filter_big_wind_list[i_station]
-    #     evaluator_model.append(obs, y_pred, filter_big_wind, key=station_name)
-    #     evaluator_nwp.append(obs, nwp, filter_big_wind, key=station_name)
-    #
-    #     if save_model:
-    #         model.save(dir_log)
-    #     file_suffix = '{}_{}'.format(station_name, tag_func)
-    #     np.savetxt(os.path.join(dir_log, 'y_pred_{}.txt'.format(file_suffix)), y_pred)
-    #     np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(file_suffix)), model.predict(x_train))
-    #     np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(file_suffix)), model.predict(x_val))
-    #     np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(file_suffix)), model.predict(x_test))
+                x_train, x_val, x_test, y_train_list, y_val_list, y_test_list, input_shape, tag_func, save_model)
 
 
 def combine_module(tag_spatial_suffix):
@@ -241,7 +212,6 @@ def combine_module(tag_spatial_suffix):
         tag_temporal = temporal_module.__name__
         tag_spatial = spatial_module.__name__ + '_' + tag_spatial_suffix
         tag_func = '{}_{}'.format(combine_module.__name__, tag_spatial_suffix)
-        # tag_func = 'combine_module_{}'.format('_'.join(tag_spatial.split('_')[2:]))
         n_stations = len(station_name_list)
 
         _, _, _, y_train_list, y_val_list, y_test_list = get_data_spatial(
@@ -303,6 +273,27 @@ def combine_module(tag_spatial_suffix):
             np.savetxt(os.path.join(dir_log, 'y_pred_test_{}_{}.txt'.format(station_name, tag_func)),
                        combine_model.predict(y_com_test))
     return _combine_module
+
+
+def get_tags(mode='all'):
+    tag_func_temporal = [temporal_module.__name__]
+    spatial_mode_list = ['output', 'mlp', 'conv', 'conv_full']
+    tag_func_spatial_list = [spatial_module.__name__ + '_' + suffix for suffix
+                             in spatial_mode_list]
+    tag_func_combine_list = [combine_module.__name__ + '_' + suffix for suffix
+                             in spatial_mode_list]
+    tag_func_list = tag_func_temporal + tag_func_spatial_list + tag_func_combine_list
+
+    if mode == 'temporal':
+        return tag_func_temporal
+    elif mode == 'spatial':
+        return tag_func_spatial_list
+    elif mode == 'combine':
+        return tag_func_combine_list
+    elif mode == 'all':
+        return tag_func_list
+    else:
+        raise ValueError("mode = {} can not be found!".format(mode))
 
 
 def main(target, mode, eval_mode, config, tag, features_history, features_future, csv_result_list=None):

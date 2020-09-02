@@ -1,12 +1,24 @@
 import os
 
-from windpred.utils.base import DIR_LOG, make_dir
-from windpred.utils.data_parser import DataGeneratorV2Spatial
-from windpred.utils.model_base import batch_run
-from windpred.utils.model_base import TESTING_SLIDING_WINDOW, MONTH_LIST, get_month_list, reduce
+from .base import DIR_LOG, make_dir
+from .data_parser import DataGeneratorV2Spatial
+from .model_base import TESTING_SLIDING_WINDOW, MONTH_LIST, get_month_list, batch_run
+from .model_base import reduce
 
 
-def main(target, mode, eval_mode, config, tag, func, csv_result_list=None):
+def get_covariates_history(target):
+    if target == 'SPD10':
+        features_history = ['SPD10', 'U10', 'V10', 'SLP', 'T2']
+    elif target == 'U10':
+        features_history = ['SPD10', 'U10', 'V10']
+    elif target == 'V10':
+        features_history = ['SPD10', 'U10', 'V10']
+    else:
+        raise ValueError('The target={} can not be found!'.format(target))
+    return features_history
+
+
+def main_spatial(target, mode, eval_mode, config, tag, func, csv_result_list=None):
     target_size = config.target_size
     period = config.period
     window = config.window
