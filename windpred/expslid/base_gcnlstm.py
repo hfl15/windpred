@@ -15,7 +15,7 @@ if __name__ == '__main__':
     target = 'DIR10'
     model_name = 'gcn_seq_lstm_seq'
 
-    if target == 'DIRA10':
+    if target == 'DIR10':
         tag_file_list = [model_name]
         exp_dir.main('run', eval_mode, tag, tag_file_list)
         exp_dir.main('reduce', eval_mode, tag, tag_file_list)
