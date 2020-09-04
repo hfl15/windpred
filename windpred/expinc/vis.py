@@ -38,11 +38,11 @@ if __name__ == '__main__':
         plt.plot(obs, label='TRUTH')
         plt.plot(nwp, label='NWP')
 
-        # lstm_h_path = 'expinc_base_lstm/history/{}/{}/{}/{}.txt'.format(target, month, str(i_run), station_name)
+        # lstm_h_path = 'expinc_base_lstm/history/{}/{}/{}/y_pred_{}.txt'.format(target, month, str(i_run), station_name)
         # lstm_h_pred = np.loadtxt(os.path.join(DIR_LOG, lstm_h_path))
         # plt.plot(lstm_h_pred, label='LSTM(h)')
 
-        fcn_f_path = 'expinc_base_mlp/future/{}/{}/{}/{}.txt'.format(target, month, str(i_run), station_name)
+        fcn_f_path = 'expinc_base_mlp/future/{}/{}/{}/y_pred_{}.txt'.format(target, month, str(i_run), station_name)
         fcn_f_pred = np.loadtxt(os.path.join(DIR_LOG, fcn_f_path))
         plt.plot(fcn_f_pred, label='MLP(f)')
 
