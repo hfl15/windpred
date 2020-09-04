@@ -92,24 +92,32 @@ def make_dir(path):
 
 
 def plot_and_save_comparison(y, y_pred, dir_log, filename='compare.png', title=None):
-    plt.plot(y, '.-', label='truth')
-    plt.plot(y_pred, '.-', label='pred')
-    plt.legend(loc='best')
-    if title is not None:
-        plt.title(title)
-    plt.savefig(os.path.join(dir_log, filename))
-    plt.close()
+   print()
 
+
+#
+# def plot_and_save_comparison(y, y_pred, dir_log, filename='compare.png', title=None):
+#     plt.plot(y, '.-', label='truth')
+#     plt.plot(y_pred, '.-', label='pred')
+#     plt.legend(loc='best')
+#     if title is not None:
+#         plt.title(title)
+#     plt.savefig(os.path.join(dir_log, filename))
+#     plt.close()
 
 def plot_train_valid_loss(loss, val_loss, dir_log, title='Training_Validation_Loss'):
-    epochs = range(len(loss))
-    plt.figure()
-    plt.plot(epochs, loss, 'b', label='Training loss')
-    plt.plot(epochs, val_loss, 'r', label='Validation loss')
-    plt.title(title)
-    plt.legend(loc='best')
-    plt.savefig(os.path.join(dir_log, '{}.png'.format(title)))
-    plt.close()
+    print()
+
+
+# def plot_train_valid_loss(loss, val_loss, dir_log, title='Training_Validation_Loss'):
+#     epochs = range(len(loss))
+#     plt.figure()
+#     plt.plot(epochs, loss, 'b', label='Training loss')
+#     plt.plot(epochs, val_loss, 'r', label='Validation loss')
+#     plt.title(title)
+#     plt.legend(loc='best')
+#     plt.savefig(os.path.join(dir_log, '{}.png'.format(title)))
+#     plt.close()
 
 
 """
