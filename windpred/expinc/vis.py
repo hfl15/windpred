@@ -6,6 +6,9 @@ from windpred.utils.base import tag_path, make_dir, DIR_LOG
 from windpred.utils.data_parser import DataGeneratorV2
 from windpred.utils.model_base import DefaultConfig, MONTH_LIST
 
+# from matplotlib.backends.backend_pdf import PdfPages
+# pdf = PdfPages(os.path.join(dir_log, "{}.pdf".format(station_name)))
+# pdf.savefig()
 
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
@@ -42,9 +45,9 @@ if __name__ == '__main__':
         # lstm_h_pred = np.loadtxt(os.path.join(DIR_LOG, lstm_h_path))
         # plt.plot(lstm_h_pred, label='LSTM(h)')
 
-        fcn_f_path = 'expinc_base_mlp/future/{}/{}/{}/y_pred_{}.txt'.format(target, month, str(i_run), station_name)
-        fcn_f_pred = np.loadtxt(os.path.join(DIR_LOG, fcn_f_path))
-        plt.plot(fcn_f_pred, label='MLP(f)')
+        # fcn_f_path = 'expinc_base_mlp/future/{}/{}/{}/y_pred_{}.txt'.format(target, month, str(i_run), station_name)
+        # fcn_f_pred = np.loadtxt(os.path.join(DIR_LOG, fcn_f_path))
+        # plt.plot(fcn_f_pred, label='MLP(f)')
 
         frame_cnn_covar_path = 'expinc_mhstn_covar/{}/{}/{}/y_pred_{}_combine_module_conv.txt'.format(
             target, month, str(i_run), station_name)
@@ -54,7 +57,7 @@ if __name__ == '__main__':
         plt.legend(loc='best')
         plt.ylabel('Value (meter/second)')
         plt.xlabel('Time (hours)')
-        plt.savefig(os.path.join(dir_log, "{}".format(station_name)), bbox_inches='tight')
+        plt.savefig(os.path.join(dir_log, "{}".format(station_name)), dpi=750, bbox_inches='tight')
         plt.close()
 
 
