@@ -6,9 +6,8 @@ from windpred.utils.base import tag_path, make_dir, DIR_LOG
 from windpred.utils.data_parser import DataGeneratorV2
 from windpred.utils.model_base import DefaultConfig, MONTH_LIST
 
-# from matplotlib.backends.backend_pdf import PdfPages
-# pdf = PdfPages(os.path.join(dir_log, "{}.pdf".format(station_name)))
-# pdf.savefig()
+from matplotlib.backends.backend_pdf import PdfPages
+
 
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
@@ -57,7 +56,14 @@ if __name__ == '__main__':
         plt.legend(loc='best')
         plt.ylabel('Value (meter/second)')
         plt.xlabel('Time (hours)')
+        plt.tight_layout()
+
         plt.savefig(os.path.join(dir_log, "{}".format(station_name)), dpi=750, bbox_inches='tight')
+
+        pdf = PdfPages(os.path.join(dir_log, "{}.pdf".format(station_name)))
+        pdf.savefig()
+        pdf.close()
+
         plt.close()
 
 
