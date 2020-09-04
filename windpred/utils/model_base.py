@@ -54,9 +54,11 @@ class BasePredictor(BaseEstimator):
         callbacks = None
         if set_cb:
             reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
-                factor=0.5, patience=5, min_lr=0.0001, mode='min', verbose=self.verbose)
-            es = tf.keras.callbacks.EarlyStopping(patience=50, mode='min', verbose=self.verbose,
-                                                  restore_best_weights=True)
+                factor=0.5, patience=3, min_lr=0.0001, mode='min', verbose=self.verbose)
+            es = tf.keras.callbacks.EarlyStopping(patience=6, mode='min', verbose=self.verbose,
+                                                  restore_best_weights=False)
+            # es = tf.keras.callbacks.EarlyStopping(patience=50, mode='min', verbose=self.verbose,
+            #                                       restore_best_weights=True)
             callbacks = [reduce_lr, es]
 
         op = tf.keras.optimizers.Adam(learning_rate=0.001)
