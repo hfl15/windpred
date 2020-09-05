@@ -277,7 +277,8 @@ def combine_module(tag_spatial_suffix):
 
 def get_tags(mode='all'):
     tag_func_temporal = [temporal_module.__name__]
-    spatial_mode_list = ['output', 'mlp', 'conv', 'conv_full']
+    spatial_mode_list = ['output', 'conv']
+    # spatial_mode_list = ['output', 'mlp', 'conv', 'conv_full']
     tag_func_spatial_list = [spatial_module.__name__ + '_' + suffix for suffix
                              in spatial_mode_list]
     tag_func_combine_list = [combine_module.__name__ + '_' + suffix for suffix
