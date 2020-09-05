@@ -13,7 +13,7 @@ from windpred.expinc.base import eval_mode
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'DIR10'
+    target = 'SPD10'
     if target == 'DIR10':
         tag_file_list = mhstn.get_tags()
         exp_dir.main('run', eval_mode, tag, tag_file_list)
