@@ -44,9 +44,9 @@ if __name__ == '__main__':
         lstm_h_pred = np.loadtxt(os.path.join(DIR_LOG, lstm_h_path))
         plt.plot(lstm_h_pred, label='LSTM(h)')
 
-        fcn_f_path = 'expinc_base_mlp/future/{}/{}/{}/y_pred_{}.txt'.format(target, month, str(i_run), station_name)
-        fcn_f_pred = np.loadtxt(os.path.join(DIR_LOG, fcn_f_path))
-        plt.plot(fcn_f_pred, label='MLP(f)')
+        # fcn_f_path = 'expinc_base_mlp/future/{}/{}/{}/y_pred_{}.txt'.format(target, month, str(i_run), station_name)
+        # fcn_f_pred = np.loadtxt(os.path.join(DIR_LOG, fcn_f_path))
+        # plt.plot(fcn_f_pred, label='MLP(f)')
 
         frame_cnn_covar_path = 'expinc_mhstn_covar/{}/{}/{}/y_pred_{}_combine_module_conv.txt'.format(
             target, month, str(i_run), station_name)
