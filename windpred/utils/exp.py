@@ -1,18 +1,18 @@
 import os
 
 from .base import DIR_LOG, make_dir
-from .data_parser import DataGeneratorV2Spatial
+from .data_parser import DataGeneratorSpatial
 from .model_base import TESTING_SLIDING_WINDOW, MONTH_LIST, get_month_list, batch_run
 from .model_base import reduce
 
 
 def get_covariates_history(target):
-    if target == 'SPD10':
-        features_history = ['SPD10', 'U10', 'V10', 'SLP', 'T2']
-    elif target == 'U10':
-        features_history = ['SPD10', 'U10', 'V10']
-    elif target == 'V10':
-        features_history = ['SPD10', 'U10', 'V10']
+    if target == 'V':
+        features_history = ['V', 'VX', 'VY', 'SLP', 'T2']
+    elif target == 'VX':
+        features_history = ['V', 'VX', 'VY']
+    elif target == 'VY':
+        features_history = ['V', 'VX', 'VY']
     else:
         raise ValueError('The target={} can not be found!'.format(target))
     return features_history
@@ -35,7 +35,7 @@ def main_spatial(target, mode, eval_mode, config, tag, func, csv_result_list=Non
     make_dir(dir_log_target)
 
     if mode.startswith('run'):
-        data_generator_spatial = DataGeneratorV2Spatial(period, window, norm=norm, x_divide_std=x_divide_std)
+        data_generator_spatial = DataGeneratorSpatial(period, window, norm=norm, x_divide_std=x_divide_std)
         for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
             dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
             months = get_month_list(eval_mode, wid)

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from windpred.utils.base import tag_path, make_dir, DIR_LOG
-from windpred.utils.data_parser import DataGeneratorV2
+from windpred.utils.data_parser import DataGenerator
 from windpred.utils.model_base import DefaultConfig, MONTH_LIST
 
 from matplotlib.backends.backend_pdf import PdfPages
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     data_generator_list = []
     for obs_data_path in obs_data_path_list:
-        data_generator = DataGeneratorV2(period, window, path=obs_data_path)
+        data_generator = DataGenerator(period, window, path=obs_data_path)
         data_generator.prepare_data(target_size, train_step=train_step, test_step=test_step, single_step=single_step)
         data_generator_list.append(data_generator)
 

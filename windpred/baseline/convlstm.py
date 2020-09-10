@@ -7,7 +7,7 @@ import numpy as np
 import os
 
 from windpred.utils.base import DIR_LOG, make_dir
-from windpred.utils.data_parser import DataGeneratorV2Spatial
+from windpred.utils.data_parser import DataGeneratorSpatial
 from windpred.utils.model_base import BasePredictor, batch_run
 from windpred.utils.model_base import TESTING_SLIDING_WINDOW, MONTH_LIST, get_month_list, reduce
 from windpred.mhstn.base import get_data_spatial, run_spatial
@@ -117,7 +117,7 @@ def main(target, mode, eval_mode, config, tag, model_name, features_history, fea
     make_dir(dir_log_target)
 
     if mode == 'run':
-        data_generator_spatial = DataGeneratorV2Spatial(period, window, norm=norm, x_divide_std=x_divide_std)
+        data_generator_spatial = DataGeneratorSpatial(period, window, norm=norm, x_divide_std=x_divide_std)
         for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
             dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
             months = get_month_list(eval_mode, wid)

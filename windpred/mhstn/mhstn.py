@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from windpred.utils.base import get_tf_keras
-from windpred.utils.data_parser import DataGeneratorV2, DataGeneratorV2Spatial
+from windpred.utils.data_parser import DataGenerator, DataGeneratorSpatial
 from windpred.utils.base import DIR_LOG
 from windpred.utils.model_base import BasePredictor, CombinerDense
 from windpred.utils.model_base import MONTH_LIST, TESTING_SLIDING_WINDOW, get_month_list
@@ -316,7 +316,7 @@ def main(target, mode, eval_mode, config, tag, features_history, features_future
     if mode.startswith('temporal'):
         data_generator_list = []
         for obs_data_path in obs_data_path_list:
-            data_generator = DataGeneratorV2(period, window, path=obs_data_path, norm=norm, x_divide_std=x_divide_std)
+            data_generator = DataGenerator(period, window, path=obs_data_path, norm=norm, x_divide_std=x_divide_std)
             data_generator_list.append(data_generator)
 
         for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
@@ -330,7 +330,7 @@ def main(target, mode, eval_mode, config, tag, features_history, features_future
                       lambda dir_log_curr: temporal_module(data_generator_list, dir_log_curr, target, n_epochs,
                                                            features_history, features_future))
     elif mode.startswith('spatial'):
-        data_generator_spatial = DataGeneratorV2Spatial(period, window, norm=norm, x_divide_std=x_divide_std)
+        data_generator_spatial = DataGeneratorSpatial(period, window, norm=norm, x_divide_std=x_divide_std)
         for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
             dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
             months = get_month_list(eval_mode, wid)
@@ -342,7 +342,7 @@ def main(target, mode, eval_mode, config, tag, features_history, features_future
                                                           data_generator_spatial, target, n_epochs,
                                                           features_history, features_future))
     elif mode.startswith('combine'):
-        data_generator_spatial = DataGeneratorV2Spatial(period, window, norm=norm, x_divide_std=x_divide_std)
+        data_generator_spatial = DataGeneratorSpatial(period, window, norm=norm, x_divide_std=x_divide_std)
         for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
             dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
             months = get_month_list(eval_mode, wid)

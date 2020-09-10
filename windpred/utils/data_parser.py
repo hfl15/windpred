@@ -47,71 +47,6 @@ def generate_data(x, y, period, window, target_size, start_idx, end_idx,
 
 
 class DataGenerator(object):
-    def __init__(self, data, period, window):
-        self.data = data
-        self.period = period
-        self.window = window
-
-        assert window % period == 0, "the window={} should be the times of period={}".format(window, period)
-
-        self.X_columns, self.y_columns = list(self.data.columns), list(self.data.columns)
-
-    def prepare_dataset(self, target_size, train_step=1, test_step=1, single_step=False,
-                        contains_delay=True):
-        data = self.data.values
-        (train_start_idx, train_end_idx), (val_start_idx, val_end_idx), (test_start_idx, test_end_idx) = \
-            split_index(data.shape[0], self.period)
-
-        # add the predictions of nwp into feature set.
-        nwp_columns = [col for col in self.data.columns if col.startswith('NWP')]
-        nwp_data = self.data[nwp_columns].values
-        if contains_delay:
-            self.X_columns.extend(['NEXT_{}'.format(i) for i in nwp_columns])
-
-        self.X_train, self.y_train = generate_data(data, data, self.period, self.window, target_size,
-                                                   train_start_idx, train_end_idx, step=train_step,
-                                                   single_step=single_step, nwp_data=nwp_data, delay=contains_delay)
-        self.X_val, self.y_val = generate_data(data, data, self.period, self.window, target_size,
-                                               val_start_idx, val_end_idx, step=train_step,
-                                               single_step=single_step, nwp_data=nwp_data, delay=contains_delay)
-        self.X_test, self.y_test = generate_data(data, data, self.period, self.window, target_size,
-                                                 test_start_idx, test_end_idx, step=test_step,
-                                                 single_step=single_step, nwp_data=nwp_data, delay=contains_delay)
-
-    def extract_feature(self, X_features, y_features):
-        X_indices = []
-        y_indices = []
-
-        for X_feature in X_features:
-            if X_feature in self.X_columns:
-                X_indices.append(self.X_columns.index(X_feature))
-            else:
-                logging.error('Cannot find feature {0}.'.format(X_feature))
-
-        for y_feature in y_features:
-            if y_feature in self.y_columns:
-                y_indices.append(self.y_columns.index(y_feature))
-            else:
-                logging.error('Cannot find feature {0}.'.format(y_feature))
-
-        X_train, X_val, X_test = self.X_train[:, :, X_indices].astype(np.float32), \
-                                 self.X_val[:, :, X_indices].astype(np.float32), \
-                                 self.X_test[:, :, X_indices].astype(np.float32)
-
-        y_train, y_val, y_test = self.y_train[:, :, y_indices].astype(np.float32), \
-                                 self.y_val[:, :, y_indices].astype(np.float32), \
-                                 self.y_test[:, :, y_indices]
-
-        logging.debug('X_features selected: {0}, y_features selected: {1}'.format(X_features, y_features))
-
-        logging.info('X_train shape:\t{0},\ty_train shape:\t{1}'.format(X_train.shape, y_train.shape))
-        logging.info('X_val shape:\t{0},\ty_val shape:\t{1}'.format(X_val.shape, y_val.shape))
-        logging.info('X_test shape:\t{0},\ty_test shape:\t{1}'.format(X_test.shape, y_test.shape))
-
-        return (X_train, y_train), (X_val, y_val), (X_test, y_test)
-
-
-class DataGeneratorV2(object):
     def __init__(self, period, window, norm=None, path=None, x_divide_std=False):
         self.path = path
         self.period = period
@@ -219,7 +154,7 @@ class DataGeneratorV2(object):
         return (x_train, y_train.squeeze()), (x_val, y_val.squeeze()), (x_test, y_test.squeeze())
 
     def extract_evaluation_data(self, target):
-        y_attributes = ['SPD10', 'NWP_{}'.format(target), target]
+        y_attributes = ['V', 'NWP_{}'.format(target), target]
         indices = [self.y_columns.index(attr) for attr in y_attributes]
         y_eval = self.y_eval[:, :, indices]
 
@@ -231,14 +166,14 @@ class DataGeneratorV2(object):
         return speed, nwp, obs, filter_big_wind
 
 
-class DataGeneratorV2Spatial(DataGeneratorV2):
+class DataGeneratorSpatial(DataGenerator):
     def __init__(self, period, window, norm=None, x_divide_std=False):
-        super(DataGeneratorV2Spatial, self).__init__(
+        super(DataGeneratorSpatial, self).__init__(
             period, window, norm=norm, path=None, x_divide_std=x_divide_std)
 
     def extract_evaluation_data(self, target):
         target_name, target_station = target.split('_')
-        y_attributes = ['SPD10_{}'.format(target_station), 'NWP_{}'.format(target_name), target]
+        y_attributes = ['V_{}'.format(target_station), 'NWP_{}'.format(target_name), target]
         indices = [self.y_columns.index(attr) for attr in y_attributes]
         y_eval = self.y_eval[:, :, indices]
 

@@ -16,12 +16,12 @@ def load_nwp_data():
     nwp_data[columns] = nwp_data[columns].astype(np.float)
     nwp_data['DateTime'] = pd.to_datetime(nwp_data['DateTime'])
 
-    nwp_data['DIRRadian'] = nwp_data['DIR10'] / 360 * (2 * math.pi)
+    nwp_data['DIRRadian'] = nwp_data['DIR'] / 360 * (2 * math.pi)
 
     nwp_data.columns = ['NWP_{}'.format(i) for i in nwp_data.columns]
 
     print("Finish to load nwp data: ", nwp_data.shape)
-    logging.info('NWP_DIR10 describe:\n', nwp_data['NWP_DIR10'].describe())
+    logging.info('NWP_DIR describe:\n', nwp_data['NWP_DIR'].describe())
 
     return nwp_data
 
@@ -37,13 +37,13 @@ def load_wind_data(path):
     wind_data = fill_missing(wind_data)
 
     # add some columns
-    wind_data['DIRRadian'] = wind_data['DIR10'] / 360 * (2 * math.pi)
-    wind_data['U10'] = -np.sin(wind_data['DIRRadian']) * wind_data['SPD10']
-    wind_data['V10'] = -np.cos(wind_data['DIRRadian']) * wind_data['SPD10']
+    wind_data['DIRRadian'] = wind_data['DIR'] / 360 * (2 * math.pi)
+    wind_data['VX'] = -np.sin(wind_data['DIRRadian']) * wind_data['V']
+    wind_data['VY'] = -np.cos(wind_data['DIRRadian']) * wind_data['V']
     # wind_data = wind_data.drop(['DIRRadian'], axis=1)
 
-    print("Finish to load wind data: ", wind_data.shape, wind_data['DIR10'].shape)
-    logging.info('DIR10 describe:\n', wind_data['DIR10'].describe())
+    print("Finish to load wind data: ", wind_data.shape, wind_data['DIR'].shape)
+    logging.info('DIR describe:\n', wind_data['DIR'].describe())
 
     return wind_data
 

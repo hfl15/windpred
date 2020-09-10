@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 DIR_LOG = '../cache/'
-DATA_DIR = '../../data/20200107update_csv'
+DATA_DIR = '../../data/obs'
 NWP_DIR = '../../data/nwp'
 
 
@@ -137,33 +137,33 @@ def angle_to_radian(angle):
     return angle / (2 * math.pi)
 
 
-def uv_to_degree(u, v):
+def vxy_to_dir(vx, vy):
     """
-        u = -spd*sin(degree/360*2*pi)
-        v = -spd*cos(degree/360*2*pi)
-    :param u:
-    :param v:
+        vx = -v*sin(dir/360*2*pi)
+        vy = -v*cos(dir/360*2*pi)
+    :param vx:
+    :param vy:
     :return:
     """
-    degree = np.arctan(u / v) / np.pi * 180
-    if u < 0 and v < 0:
-        degree = degree
-    elif u >= 0 and v < 0:
-        degree = degree + 360
+    dir = np.arctan(vx / vy) / np.pi * 180
+    if vx < 0 and vy < 0:
+        dir = dir
+    elif vx >= 0 and vy < 0:
+        dir = dir + 360
     else:  # (u<0 and v>=0) or (u>=0 and v>=0)
-        degree = degree + 180
+        dir = dir + 180
 
-    return degree
-
-
-def uv_to_degree_vec(u, v):
-    assert len(u) == len(v), \
-        "len(u)={} should be equal to len(v)={}".format(len(u), len(v))
-    return np.array([uv_to_degree(u[i], v[i]) for i in range(len(u))])
+    return dir
 
 
-def uv_to_speed(u, v):
-    return np.sqrt(u*2, v*2)
+def vxy_to_dir_vec(vx, vy):
+    assert len(vx) == len(vy), \
+        "len(u)={} should be equal to len(v)={}".format(len(vx), len(vy))
+    return np.array([vxy_to_dir(vx[i], vy[i]) for i in range(len(vx))])
+
+
+def vxy_to_v(vx, vy):
+    return np.sqrt(vx * 2, vy * 2)
 
 
 """

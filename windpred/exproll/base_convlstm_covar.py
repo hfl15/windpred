@@ -7,15 +7,15 @@ from windpred.utils import exp_dir
 
 from windpred.baseline import convlstm
 
-from windpred.expslid.base import eval_mode
+from windpred.exproll.base import eval_mode
 
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'DIR10'
+    target = 'DIR'
     model_name = 'convlstm'
 
-    if target == 'DIR10':
+    if target == 'DIR':
         tag_file_list = [model_name]
         exp_dir.main('run', eval_mode, tag, tag_file_list)
         exp_dir.main('reduce', eval_mode, tag, tag_file_list)

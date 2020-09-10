@@ -27,7 +27,8 @@ class DefaultConfig(object):
     x_divide_std = True
 
     n_epochs = 1000
-    n_runs = 10
+    n_runs = 2
+    # n_runs = 10
 
     obs_data_path_list, nwp_path = get_files_path()
     station_name_list = [get_station_name(path) for path in obs_data_path_list]
@@ -55,10 +56,8 @@ class BasePredictor(BaseEstimator):
         if set_cb:
             reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
                 factor=0.5, patience=3, min_lr=0.0001, mode='min', verbose=self.verbose)
-            es = tf.keras.callbacks.EarlyStopping(patience=6, mode='min', verbose=self.verbose,
-                                                  restore_best_weights=False)
-            # es = tf.keras.callbacks.EarlyStopping(patience=50, mode='min', verbose=self.verbose,
-            #                                       restore_best_weights=True)
+            es = tf.keras.callbacks.EarlyStopping(patience=30, mode='min', verbose=self.verbose,
+                                                  restore_best_weights=True)
             callbacks = [reduce_lr, es]
 
         op = tf.keras.optimizers.Adam(learning_rate=0.001)
@@ -80,18 +79,18 @@ class BasePredictor(BaseEstimator):
         val_loss = self.history.history['val_loss']
         plot_train_valid_loss(loss, val_loss, dir_log, title)
 
-    def save(self, dir, name=None):
+    def save(self, path, name=None):
         if name is not None:
-            dir_saved = os.path.join(dir, '{}.hdf5'.format(name))
+            dir_saved = os.path.join(path, '{}.hdf5'.format(name))
         else:
-            dir_saved = os.path.join(dir, '{}.hdf5'.format(self.name))
+            dir_saved = os.path.join(path, '{}.hdf5'.format(self.name))
         self.model.save(dir_saved)
 
-    def load(self, dir, name=None):
+    def load(self, path, name=None):
         if name is not None:
-            dir_saved = os.path.join(dir, '{}.hdf5'.format(name))
+            dir_saved = os.path.join(path, '{}.hdf5'.format(name))
         else:
-            dir_saved = os.path.join(dir, '{}.hdf5'.format(self.name))
+            dir_saved = os.path.join(path, '{}.hdf5'.format(self.name))
         self.model = tf.keras.models.load_model(dir_saved)
 
 
@@ -138,7 +137,6 @@ class CombinerDense(BasePredictor):
 
     def build_model(self, input_shape, units_output):
         model = tf.keras.models.Sequential()
-        # model.add(tf.keras.layers.Dense(1, use_bias=False, input_shape=input_shape))
         model.add(
             tf.keras.layers.Dense(
                 units_output, use_bias=False,
@@ -188,13 +186,13 @@ def run(data_generator_list, cls_model, dir_log, target, n_epochs,
 def reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list):
     for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
         dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
-        if target == 'DIR10':
+        if target == 'DIR':
             reduce_multiple_runs_dir(dir_log_exp, csv_result_list, n_runs, station_name_list)
         else:
             reduce_multiple_runs(dir_log_exp, csv_result_list, n_runs, station_name_list)
 
     csv_list = ['{}_agg_mean.csv'.format(f.split('.')[0]) for f in csv_result_list]
-    if target == 'DIR10':
+    if target == 'DIR':
         reduce_multiple_splits_dir(dir_log_target, csv_list)
     else:
         reduce_multiple_splits(dir_log_target, csv_list)
@@ -242,7 +240,7 @@ def reduce_multiple_runs(dir_log, csv_list, n_runs, station_name_list, columns=[
 
 
 def reduce_multiple_runs_dir(dir_log, csv_list, n_runs, station_name_list):
-    columns = {'all_rmse', 'big_rmse', 'small_rmse', 'all_mae', 'big_mae', 'small_mae'}
+    columns = {'all_mae', 'big_mae', 'small_mae'}
     reduce_multiple_runs(dir_log, csv_list, n_runs, station_name_list, columns)
 
 
@@ -268,7 +266,7 @@ def get_month_list(eval_mode, wid):
 def reduce_multiple_splits(path, csvf_list, col_name='all_rmse'):
     """
     Example:
-        path = "/Users/huangfanling/workspace/bitbucket/wind_prediction/cache/aaai21/aaai21_mhstn_covar_self/SPD10"
+        path = "cache/aaai21/aaai21_mhstn_covar_self/V"
         csvf_list = ['{}_agg_mean.csv'.format(f.split('.')[0]) for f in CSV_LIST]
     :param path:
     :param csvf_list:

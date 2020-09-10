@@ -2,7 +2,7 @@ import os
 
 from windpred.utils.base import DIR_LOG
 from windpred.utils.base import make_dir
-from windpred.utils.data_parser import DataGeneratorV2
+from windpred.utils.data_parser import DataGenerator
 from windpred.utils.model_base import MONTH_LIST, TESTING_SLIDING_WINDOW, get_month_list
 from windpred.utils.model_base import batch_run, run, reduce
 
@@ -26,7 +26,7 @@ def main(tag, config, target, mode, eval_mode, cls_model, csv_result_list=None):
     if mode.startswith('run'):
         data_generator_list = []
         for obs_data_path in obs_data_path_list:
-            data_generator = DataGeneratorV2(period, window, path=obs_data_path)
+            data_generator = DataGenerator(period, window, path=obs_data_path)
             data_generator_list.append(data_generator)
 
         for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):

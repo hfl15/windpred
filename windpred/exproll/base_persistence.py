@@ -8,12 +8,12 @@ import pandas as pd
 
 from windpred.utils.base import DIR_LOG
 from windpred.utils.base import tag_path, make_dir
-from windpred.utils.data_parser import DataGeneratorV2
+from windpred.utils.data_parser import DataGenerator
 from windpred.utils.evaluation import Evaluator, EvaluatorDir
 from windpred.utils.model_base import DefaultConfig
 from windpred.utils.model_base import TESTING_SLIDING_WINDOW, MONTH_LIST, get_month_list
 
-from windpred.expslid.base import eval_mode
+from windpred.exproll.base import eval_mode
 
 
 def run(data_generator_list, dir_log, target):
@@ -64,13 +64,13 @@ if __name__ == '__main__':
     single_step = DefaultConfig.single_step
     obs_data_path_list = DefaultConfig.obs_data_path_list
 
-    target = 'DIR10'
+    target = 'DIR'
     dir_log_target = os.path.join(DIR_LOG, tag, target)
     make_dir(dir_log_target)
 
     data_generator_list = []
     for obs_data_path in obs_data_path_list:
-        data_generator = DataGeneratorV2(period, window, path=obs_data_path)
+        data_generator = DataGenerator(period, window, path=obs_data_path)
         data_generator_list.append(data_generator)
 
     for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
@@ -82,7 +82,7 @@ if __name__ == '__main__':
         run(data_generator_list, dir_log_exp, target)
 
     csv_list = ['metrics_model.csv', 'metrics_nwp.csv']
-    if target == 'DIR10':
+    if target == 'DIR':
         reduce_multiple_splits_dir(dir_log_target, csv_list)
     else:
         reduce_multiple_splits(dir_log_target, csv_list)

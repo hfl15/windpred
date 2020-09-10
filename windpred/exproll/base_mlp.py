@@ -2,19 +2,18 @@ import os
 
 from windpred.utils.base import tag_path
 
-from windpred.utils.model_base import DefaultConfig, BaseLSTM
+from windpred.utils.model_base import DefaultConfig, BaseMLP
 from windpred.utils import exp_dir
 from windpred.baseline import temporal_nn
-from windpred.expslid.base import eval_mode
-
+from windpred.exproll.base import eval_mode
 
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'DIR10'
+    target = 'V'
     feature_mode_list = ['history', 'future', 'history_future']
 
-    if target == 'DIR10':
+    if target == 'DIR':
         for mode in feature_mode_list:
             tag_file_list = [None]
             file_exp_in = os.path.join(tag, mode)
@@ -23,7 +22,7 @@ if __name__ == '__main__':
     else:
         mode = 'run'
         for feature_mode in feature_mode_list:
-            temporal_nn.main(tag, DefaultConfig, target, mode+'-'+feature_mode, eval_mode, BaseLSTM)
+            temporal_nn.main(tag, DefaultConfig, target, mode+'-'+feature_mode, eval_mode, BaseMLP)
 
 
 

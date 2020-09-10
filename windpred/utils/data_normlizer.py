@@ -11,8 +11,6 @@ def get_norm_method(method):
         return StandardScaler(with_std=False)
     elif method.lower() == 'minmax':
         return MinMaxScaler()
-    # elif method.lower() == 'normal': # AttributeError: 'Normalizer' object has no attribute 'inverse_transform'
-    #     return Normalizer()
     elif method.lower() == 'maxabs':
         return MaxAbsScaler()
     else:
