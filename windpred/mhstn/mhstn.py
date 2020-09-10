@@ -69,23 +69,6 @@ class SpatialModuleCNN(BasePredictor):
         return model
 
 
-class SpatialModuleCNNFull(BasePredictor):
-    def __init__(self, input_shape, units_output=24, verbose=1, name='spatial_module_cnn_full'):
-        super(SpatialModuleCNNFull, self).__init__(input_shape, units_output, verbose, name)
-        self.model = self.build_model()
-        if self.verbose > 0:
-            self.model.summary()
-
-    def build_model(self):
-        inp = tf.keras.layers.Input(self.input_shape)
-        n_channels = inp.shape[2]
-        h = tf.keras.layers.Conv1D(inp.shape[1]*n_channels*2, inp.shape[1], activation='relu')(inp)
-        h = tf.keras.layers.Flatten()(h)
-        output = tf.keras.layers.Dense(self.units_output)(h)
-        model = tf.keras.models.Model(inp, output)
-        return model
-
-
 def temporal_module(data_generator_list, dir_log, target, n_epochs,
                     features_history_in, features_future_in,
                     save_model=True):
@@ -185,17 +168,11 @@ def spatial_module(mode, station_name_list, dir_log, data_generator, target, n_e
     tag_func = spatial_module.__name__ + '_' + mode
     tag_temporal = temporal_module.__name__
 
-    if mode == 'output':
-        cls_model = CombinerDense
-        get_data_func = get_data_spatial_output
-    elif mode == 'mlp':
+    if mode == 'mlp':
         cls_model = SpatialModuleMLP
         get_data_func = get_data_spatial_mlp
     elif mode == 'conv':
         cls_model = SpatialModuleCNN
-        get_data_func = get_data_spatial_conv
-    elif mode == 'conv_full':
-        cls_model = SpatialModuleCNNFull
         get_data_func = get_data_spatial_conv
     else:
         raise ValueError("In {}: mode = {} can not be found!".format(spatial_module.__name__, mode))
@@ -277,8 +254,7 @@ def combine_module(tag_spatial_suffix):
 
 def get_tags(mode='all'):
     tag_func_temporal = [temporal_module.__name__]
-    spatial_mode_list = ['output', 'conv']
-    # spatial_mode_list = ['output', 'mlp', 'conv', 'conv_full']
+    spatial_mode_list = ['conv']
     tag_func_spatial_list = [spatial_module.__name__ + '_' + suffix for suffix
                              in spatial_mode_list]
     tag_func_combine_list = [combine_module.__name__ + '_' + suffix for suffix
