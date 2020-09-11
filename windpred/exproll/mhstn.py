@@ -20,9 +20,11 @@ if __name__ == '__main__':
         exp_dir.main('reduce', eval_mode, tag, tag_file_list)
     else:
         features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
-        mode = 'spatial-output'
-        csv_result_list = CSV_RESULT_FILES
-        mhstn.main(target, mode, eval_mode, DefaultConfig, tag, features_history, features_future, csv_result_list)
+        mode_list = ['temporal', 'spatial-conv', 'combine-conv', 'reduce']
+        for mode in mode_list:
+            # mode = 'spatial-output'
+            csv_result_list = CSV_RESULT_FILES
+            mhstn.main(target, mode, eval_mode, DefaultConfig, tag, features_history, features_future, csv_result_list)
 
 
 
