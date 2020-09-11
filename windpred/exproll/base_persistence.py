@@ -64,7 +64,7 @@ if __name__ == '__main__':
     single_step = DefaultConfig.single_step
     obs_data_path_list = DefaultConfig.obs_data_path_list
 
-    target = 'DIR'
+    target = 'V'
     dir_log_target = os.path.join(DIR_LOG, tag, target)
     make_dir(dir_log_target)
 

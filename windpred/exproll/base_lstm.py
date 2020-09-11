@@ -11,7 +11,7 @@ from windpred.exproll.base import eval_mode
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'DIR'
+    target = 'V'
     feature_mode_list = ['history', 'future', 'history_future']
 
     if target == 'DIR':

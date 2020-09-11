@@ -11,10 +11,10 @@ from windpred.expinc.base import eval_mode
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'SPD10'
+    target = 'V'
     feature_mode_list = ['history', 'future', 'history_future']
 
-    if target == 'DIR10':
+    if target == 'DIR':
         for mode in feature_mode_list:
             tag_file_list = [None]
             file_exp_in = os.path.join(tag, mode)

@@ -11,10 +11,10 @@ from windpred.expinc.base import eval_mode
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'SPD10'
+    target = 'V'
     model_name = 'convlstm'
 
-    if target == 'DIR10':
+    if target == 'DIR':
         tag_file_list = [model_name]
         exp_dir.main('run', eval_mode, tag, tag_file_list)
         exp_dir.main('reduce', eval_mode, tag, tag_file_list)

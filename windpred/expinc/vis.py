@@ -20,7 +20,7 @@ if __name__ == '__main__':
     single_step = DefaultConfig.single_step
     obs_data_path_list = DefaultConfig.obs_data_path_list
 
-    target = 'SPD10'
+    target = 'V'
     i_run = 0
     month = str(MONTH_LIST[-1])
 
