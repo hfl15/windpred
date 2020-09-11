@@ -13,7 +13,7 @@ from windpred.exproll.base import eval_mode
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'DIR'
+    target = 'V'
 
     if target == 'DIR':
         tag_file_list = mhstn.get_tags()
@@ -22,10 +22,7 @@ if __name__ == '__main__':
     else:
         features_history = get_covariates_history(target)
         features_future = ['NEXT_NWP_{}'.format(target)]
-        mode = 'temporal'
-        csv_result_list = CSV_RESULT_FILES
-        mhstn.main(target, mode, eval_mode, DefaultConfig, tag, features_history, features_future, csv_result_list)
-
-
-
-
+        mode_list = ['temporal', 'spatial-conv', 'combine-conv', 'reduce']
+        for mode in mode_list:
+            csv_result_list = CSV_RESULT_FILES
+            mhstn.main(target, mode, eval_mode, DefaultConfig, tag, features_history, features_future, csv_result_list)

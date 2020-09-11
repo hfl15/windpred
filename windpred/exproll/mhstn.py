@@ -22,7 +22,6 @@ if __name__ == '__main__':
         features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
         mode_list = ['temporal', 'spatial-conv', 'combine-conv', 'reduce']
         for mode in mode_list:
-            # mode = 'spatial-output'
             csv_result_list = CSV_RESULT_FILES
             mhstn.main(target, mode, eval_mode, DefaultConfig, tag, features_history, features_future, csv_result_list)
 
