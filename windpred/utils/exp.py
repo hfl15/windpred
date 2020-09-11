@@ -8,7 +8,7 @@ from .model_base import reduce
 
 def get_covariates_history(target):
     if target == 'V':
-        features_history = ['V', 'VX', 'VY', 'SLP', 'T2']
+        features_history = ['V', 'VX', 'VY', 'SLP', 'TP']
     elif target == 'VX':
         features_history = ['V', 'VX', 'VY']
     elif target == 'VY':
