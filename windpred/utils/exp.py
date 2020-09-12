@@ -18,6 +18,14 @@ def get_covariates_history(target):
     return features_history
 
 
+def get_covariates_history_all():
+    return ['V', 'VX', 'VY', 'DIRRadian', 'SLP', 'TP', 'RH']
+
+
+def get_covariates_future_all():
+    return ['NEXT_NWP_{}'.format(feat) for feat in ['V', 'VX', 'VY', 'DIRRadian', 'SLP', 'TP', 'RH']]
+
+
 def main_spatial(target, mode, eval_mode, config, tag, func, csv_result_list=None):
     target_size = config.target_size
     period = config.period

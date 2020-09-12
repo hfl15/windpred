@@ -2,6 +2,7 @@ import os
 
 from windpred.utils.base import tag_path
 from windpred.utils.model_base import DefaultConfig
+from windpred.utils.exp import get_covariates_history_all, get_covariates_future_all
 from windpred.utils import exp_dir
 
 from windpred.mhstn.base import CSV_RESULT_FILES
@@ -19,9 +20,8 @@ if __name__ == '__main__':
         exp_dir.main('run', eval_mode, tag, tag_file_list)
         exp_dir.main('reduce', eval_mode, tag, tag_file_list)
     else:
-        features_history = ['V', 'VX', 'VY', 'DIRRadian', 'SLP', 'TP', 'RH']
-        features_future = ['NEXT_NWP_{}'.format(feat) for feat in
-                           ['V', 'VX', 'VY', 'DIRRadian', 'SLP', 'TP', 'RH']]
+        features_history = get_covariates_history_all()
+        features_future = get_covariates_future_all()
         mode_list = ['temporal', 'spatial-conv', 'combine-conv', 'reduce']
         for mode in mode_list:
             csv_result_list = CSV_RESULT_FILES
