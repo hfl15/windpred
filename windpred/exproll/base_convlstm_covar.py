@@ -22,6 +22,6 @@ if __name__ == '__main__':
     else:
         features_history = get_covariates_history(target)
         features_future = ['NEXT_NWP_{}'.format(target)]
-        mode = 'run'
-        convlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future)
+        for mode in ['run', 'reduce']:
+            convlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future)
 

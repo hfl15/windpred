@@ -20,9 +20,9 @@ if __name__ == '__main__':
             exp_dir.main('run', eval_mode, file_exp_in, tag_file_list)
             exp_dir.main('reduce', eval_mode, file_exp_in, tag_file_list)
     else:
-        mode = 'run'
-        for feature_mode in feature_mode_list:
-            temporal_nn.main(tag, DefaultConfig, target, mode+'-'+feature_mode, eval_mode, BaseMLP)
+        for mode in ['run', 'reduce']:
+            for feature_mode in feature_mode_list:
+                temporal_nn.main(tag, DefaultConfig, target, mode+'-'+feature_mode, eval_mode, BaseMLP)
 
 
 
