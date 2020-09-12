@@ -20,8 +20,8 @@ if __name__ == '__main__':
         exp_dir.main('reduce', eval_mode, tag, tag_file_list)
     else:
         features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
-        mode = 'run'
-        convlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future)
+        for mode in ['run', 'reduce']:
+            convlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future)
 
 
 
