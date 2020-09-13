@@ -1,6 +1,3 @@
-import sys
-sys.path.append('..')
-
 import os
 import numpy as np
 import pandas as pd
@@ -8,10 +5,10 @@ from sklearn.linear_model import RidgeCV, LassoCV
 from sklearn.preprocessing import minmax_scale
 import json
 
-from utilities.utils import tag_path, make_dir
-from utilities.prepare_data import DataGeneratorV2
-
-from paper.base import DIR_LOG, DefaultConfig
+from windpred.utils.base import tag_path, make_dir, DIR_LOG
+from windpred.utils.data_parser import DataGenerator
+from windpred.utils.model_base import DefaultConfig
+from windpred.utils.exp import get_covariates_future_all
 
 
 def calculate_weights(data_generator_list, dir_log, features, target, method='ridge'):
@@ -66,28 +63,18 @@ def calculate_weights(data_generator_list, dir_log, features, target, method='ri
 
 def select_features_fixed_threshold(dir_log, method='ridge'):
     df_weight = pd.read_csv(os.path.join(dir_log, '{}_abs_minmax.csv'.format(method)), index_col=0)
+    df_weight_agg = df_weight.mean()
+    df_weight_agg.to_csv(os.path.join(dir_log, '{}_final_importance.csv'.format(method)))
+
     station_name_list = list(df_weight.index)
-    features = list(df_weight.columns)
-
-    features_selected_dic = dict()
-    threshold_list = []
-    for station_name, weights in zip(station_name_list, df_weight.values):
-        features_selected_dic[station_name] = []
-        # threshold = np.mean(weights)
-        threshold = 0.5
-        threshold_list.append(threshold)
-        for w, feat in zip(weights, features):
-            if w >= threshold:
-                features_selected_dic[station_name].append(feat)
-
-    np.savetxt(os.path.join(dir_log, '{}_threshold.txt'.format(method)), threshold_list)
-    with open(os.path.join(dir_log, '{}_best_features.json'.format(method)), 'w') as f:
+    threshold = 0.5
+    features_selected = [feat for feat, weigh in zip(list(df_weight_agg.index), df_weight_agg.values)
+                         if weigh > threshold]
+    features_selected_dic = {}
+    for station_name in station_name_list:
+        features_selected_dic[station_name] = features_selected
+    with open(os.path.join(dir_log, '{}_selected_features.json'.format(method)), 'w') as f:
         json.dump(features_selected_dic, f)
-
-    print(threshold_list)
-    print(features_selected_dic)
-
-    return features_selected_dic
 
 
 if __name__ == '__main__':
@@ -104,18 +91,18 @@ if __name__ == '__main__':
     n_epochs = DefaultConfig.n_epochs
     obs_data_path_list = DefaultConfig.obs_data_path_list
 
-    target = 'SPD10'
+    target = 'V'
     method = 'ridge'
     dir_log = os.path.join(DIR_LOG, tag, target)
     make_dir(dir_log)
 
     data_generator_list = []
     for obs_data_path in obs_data_path_list:
-        data_generator = DataGeneratorV2(period, window, path=obs_data_path, norm=norm, x_divide_std=x_divide_std)
+        data_generator = DataGenerator(period, window, path=obs_data_path, norm=norm, x_divide_std=x_divide_std)
         data_generator.prepare_data(target_size, train_step=train_step, test_step=test_step, single_step=single_step)
         data_generator_list.append(data_generator)
 
-    features = ['NEXT_NWP_{}'.format(feat) for feat in ['SPD10', 'U10', 'V10', 'DIRRadian', 'SLP', 'T2', 'RH2']]
+    features = get_covariates_future_all()
 
     calculate_weights(data_generator_list, dir_log, features, target, method=method)
     select_features_fixed_threshold(dir_log, method=method)

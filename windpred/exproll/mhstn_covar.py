@@ -2,10 +2,9 @@ import os
 
 from windpred.utils.base import tag_path
 from windpred.utils.model_base import DefaultConfig
-from windpred.utils.exp import get_covariates_history
 from windpred.utils import exp_dir
 
-from windpred.mhstn.base import CSV_RESULT_FILES
+from windpred.mhstn.base import CSV_RESULT_FILES, get_covariates_history
 from windpred.mhstn import mhstn
 from windpred.exproll.base import eval_mode
 

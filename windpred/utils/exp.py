@@ -6,18 +6,6 @@ from .model_base import TESTING_SLIDING_WINDOW, MONTH_LIST, get_month_list, batc
 from .model_base import reduce
 
 
-def get_covariates_history(target):
-    if target == 'V':
-        features_history = ['V', 'VX', 'VY', 'SLP', 'TP']
-    elif target == 'VX':
-        features_history = ['V', 'VX', 'VY']
-    elif target == 'VY':
-        features_history = ['V', 'VX', 'VY']
-    else:
-        raise ValueError('The target={} can not be found!'.format(target))
-    return features_history
-
-
 def get_covariates_history_all():
     return ['V', 'VX', 'VY', 'DIRRadian', 'SLP', 'TP', 'RH']
 
