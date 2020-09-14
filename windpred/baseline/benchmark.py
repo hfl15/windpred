@@ -1,5 +1,5 @@
 """
-    use the observations of current day to predict the next day.
+    persistence model and NWP model.
 """
 
 import os
