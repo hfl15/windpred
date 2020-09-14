@@ -2,6 +2,7 @@ from sklearn.base import BaseEstimator
 import os
 import pandas as pd
 import numpy as np
+from time import time
 
 from .base import get_station_name, get_files_path, get_tf_keras, make_dir
 from .base import plot_train_valid_loss, plot_and_save_comparison
@@ -27,7 +28,8 @@ class DefaultConfig(object):
     x_divide_std = True
 
     n_epochs = 1000
-    n_runs = 10
+    n_runs = 2
+    # n_runs = 10
 
     obs_data_path_list, nwp_path = get_files_path()
     station_name_list = [get_station_name(path) for path in obs_data_path_list]
@@ -156,19 +158,23 @@ def run(data_generator_list, cls_model, dir_log, target, n_epochs,
     file_suffix = "" if tag_file is None else '_'+tag_file
     evaluator_model = Evaluator(dir_log, 'model'+file_suffix)
     evaluator_nwp = Evaluator(dir_log, 'nwp'+file_suffix)
+    time_training, time_inference = 0, 0
     for i_station, data_generator in enumerate(data_generator_list):
+        time_start = time()
         station_name = data_generator.station_name
-
         x_train, x_val, x_test = x_train_list[i_station], x_val_list[i_station], x_test_list[i_station]
         y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
 
         model = cls_model(input_shape, name=(station_name+file_suffix))
         model.fit(x_train, y_train, n_epochs=n_epochs, validation_data=(x_val, y_val))
+        time_training += (time() - time_start)
         model.plot_train_history(dir_log, ('train_loss'+'_'+station_name+file_suffix))
 
+        time_start = time()
         y_pred = model.predict(x_test).ravel()
         if data_generator.norm is not None:
             y_pred = data_generator.normalizer.inverse_transform(target, y_pred)
+        time_inference += (time() - time_start)
         speed, nwp, obs, filter_big_wind = data_generator.extract_evaluation_data(target)
         plot_and_save_comparison(obs, y_pred, dir_log, filename='compare_{}.png'.format(station_name+file_suffix))
         evaluator_model.append(obs, y_pred, filter_big_wind, key=station_name)
@@ -180,6 +186,8 @@ def run(data_generator_list, cls_model, dir_log, target, n_epochs,
         np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(station_name+file_suffix)), model.predict(x_train))
         np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(station_name+file_suffix)), model.predict(x_val))
         np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(station_name+file_suffix)), model.predict(x_test))
+
+    return time_training, time_inference
 
 
 def reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list):

@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from time import time
 
 from windpred.utils.evaluation import Evaluator
 
@@ -116,19 +117,24 @@ def run_spatial(station_name_list, cls_model, dir_log, data_generator, target, n
     n_stations = len(station_name_list)
     nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target, n_stations)
 
+    time_training, time_inference = 0, 0
     evaluator_model = Evaluator(dir_log, 'model'+file_suffix)
     evaluator_nwp = Evaluator(dir_log, 'nwp'+file_suffix)
     for i_station in range(n_stations):
+        time_start = time()
         station_name = station_name_list[i_station]
         y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
 
         model = cls_model(input_shape, name=(station_name+file_suffix))
         model.fit(x_train, y_train, n_epochs=n_epochs, validation_data=(x_val, y_val))
+        time_training += (time() - time_start)
 
+        time_start = time()
         y_pred = model.predict(x_test).ravel()
         if data_generator.norm is not None:
             target_curr = '{}_S{}'.format(target, i_station)
             y_pred = data_generator.normalizer.inverse_transform(target_curr, y_pred)
+        time_inference += (time() - time_start)
 
         obs = obs_list[i_station]
         filter_big_wind = filter_big_wind_list[i_station]
@@ -141,3 +147,7 @@ def run_spatial(station_name_list, cls_model, dir_log, data_generator, target, n
         np.savetxt(os.path.join(dir_log, 'y_pred_train_{}.txt'.format(station_name+file_suffix)), model.predict(x_train))
         np.savetxt(os.path.join(dir_log, 'y_pred_val_{}.txt'.format(station_name+file_suffix)), model.predict(x_val))
         np.savetxt(os.path.join(dir_log, 'y_pred_test_{}.txt'.format(station_name+file_suffix)), model.predict(x_test))
+
+    return time_training, time_inference
+
+

@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from time import time
 
 from windpred.utils.base import get_tf_keras
 from windpred.utils.data_parser import DataGenerator, DataGeneratorSpatial
@@ -193,8 +194,7 @@ def combine_module(tag_spatial_suffix):
 
         _, _, _, y_train_list, y_val_list, y_test_list = get_data_spatial(
             data_generator, station_name_list, target, features_history, features_future)
-        nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target,
-                                                                                      n_stations)
+        nwp, obs_list, speed_list, filter_big_wind_list = get_evaluation_data_spatial(data_generator, target, n_stations)
 
         y_pred_temporal_train_list = []
         y_pred_temporal_val_list = []
@@ -218,9 +218,11 @@ def combine_module(tag_spatial_suffix):
             y_pred_spatial_val_list.append(y_pred_val)
             y_pred_spatial_test_list.append(y_pred_te)
 
+        time_training, time_inference = 0, 0
         evaluator_model = Evaluator(dir_log, 'model_{}'.format(tag_func))
         evaluator_nwp = Evaluator(dir_log, 'nwp_{}'.format(tag_func))
         for i_station in range(n_stations):
+            time_start = time()
             station_name = station_name_list[i_station]
             y_train, y_val, y_test = y_train_list[i_station], y_val_list[i_station], y_test_list[i_station]
             y_com_train = np.hstack([y_pred_temporal_train_list[i_station], y_pred_spatial_train_list[i_station]])
@@ -229,11 +231,14 @@ def combine_module(tag_spatial_suffix):
 
             combine_model = CombinerDense(y_com_train.shape[1:], name='{}_{}'.format(station_name, tag_func))
             combine_model.fit(y_com_train, y_train, n_epochs=n_epochs, validation_data=(y_com_val, y_val))
+            time_training += (time() - time_start)
 
+            time_start = time()
             y_pred = combine_model.predict(y_com_test).ravel()
             if data_generator.norm is not None:
                 target_curr = '{}_S{}'.format(target, i_station)
                 y_pred = data_generator.normalizer.inverse_transform(target_curr, y_pred)
+            time_inference += (time() - time_start)
 
             obs = obs_list[i_station]
             filter_big_wind = filter_big_wind_list[i_station]
@@ -249,6 +254,7 @@ def combine_module(tag_spatial_suffix):
                        combine_model.predict(y_com_val))
             np.savetxt(os.path.join(dir_log, 'y_pred_test_{}_{}.txt'.format(station_name, tag_func)),
                        combine_model.predict(y_com_test))
+        return time_training, time_inference
     return _combine_module
 
 
