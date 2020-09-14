@@ -1,7 +1,3 @@
-"""
-    https://keras.io/examples/vision/conv_lstm/
-"""
-
 import tensorflow as tf
 import numpy as np
 import os

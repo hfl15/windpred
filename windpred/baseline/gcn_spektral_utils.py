@@ -1,5 +1,5 @@
 """
-    reference: https://github.com/danielegrattarola/spektral/tree/master/spektral/utils
+    copy from https://github.com/danielegrattarola/spektral/tree/master/spektral/utils
 """
 import numpy as np
 from scipy import sparse as sp
