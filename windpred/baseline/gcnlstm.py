@@ -1,3 +1,6 @@
+"""
+    A coupled GCN and LSTM architecture.
+"""
 import tensorflow as tf
 import numpy as np
 import os

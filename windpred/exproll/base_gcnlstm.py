@@ -3,7 +3,7 @@ import os
 from windpred.utils.base import tag_path
 from windpred.utils.model_base import DefaultConfig
 
-from windpred.baseline import gcn
+from windpred.baseline import gcnlstm
 from windpred.utils import exp_dir
 
 from windpred.exproll.base import eval_mode
@@ -23,5 +23,5 @@ if __name__ == '__main__':
         features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
         for mode in ['run', 'reduce']:
             adjacency_norm = 'localpooling_filter'
-            gcn.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future, adjacency_norm)
+            gcnlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future, adjacency_norm)
 
