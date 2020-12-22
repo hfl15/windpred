@@ -1,17 +1,25 @@
 # MHSTN
 
-This is the source code for the work: A Spatiotemporal Deep Neural Network for High-Spatial-Resolution Multi-Horizon Wind Prediction.
+The data and source code of the work: A Spatiotemporal Deep Neural Network for High-Spatial-Resolution Multi-Horizon Wind Prediction.
 
 ## Project structure
 
-- `data/`: The contributed dataset including observation and NWP data.
+- `data/`:
+	- `obs/`: The nine groups of observation data (corresponding to nine `.csv` files). 
+	- `nwp/`: The one group of NWP data (corresponding to a `.csv` file).
 - `windpred/`
-	- `baseline/`: There are the realizations of the included competitor models. 
-	- `eda/`: There are some functions to conduct exploratory data analysis, e.g. calculation of varying correlations and statistics and visualization of data. 
-	- `expinc/`: There are the experimental scripts to conduct the incremental evaluation. 
-	- `exproll/`: There are the experimental scripts to conduct the rolling evaluation. 
-	- `mhstn/`: There are the realizations of the proposed unified framework.
-	- `utils/`: There are some general utils.
+	- `baseline/`: The realizations of the included competitor models. 
+	- `eda/`: Some functions to conduct exploratory data analysis, e.g. calculation of varying correlations and statistics and visualization of data. 
+	- `expinc/`: The experimental scripts to conduct the incremental evaluation. 
+	- `exproll/`: The experimental scripts to conduct the rolling evaluation. 
+	- `mhstn/`: The realizations of the proposed unified framework.
+	- `utils/`: Some general utils.
+
+## Data description
+
+The observation and NWP data are located in the directories of `data/obs/` and `data/nwp/`, respectively. There are nine groups of observation data and one group of NWP data shared to the whole airfield.  Missing values in the observation data are represented by a number of `-9999`. The weather variables include wind speed (`V`), lateral wind speed (`VX`), longitudinal wind speed (`VY`), wind direction (`DIR`), temperature (`TP`), relative humidity (`RH`), and sea-level pressure (`SLP`). Note that the values of `VX` and `VY` in the observation data are calculated from `V` and `DIR` as they cannot be measured directly. 
+
+For more details, please refer to the paper and the source code.
 
 ## Installation
 
@@ -37,8 +45,8 @@ The proposed unified model and its components correspond to the following script
 
 The other two files are:
 >- `vis.py `: visualizing the prediction results, 
->- `base.py`: saving common settings of experiments.
+>- `base.py`: saving the common settings of experiments.
 
-For each script to run a model, the variable of `target`, which points to the target wind variable, can be sequentially assigned with `V`, `VX`, `VY` and `DIR`. The experiment results are saved in the directory of `cache/`.
+For each of aforementioned scripts, the variable of `target`, which points to the target wind variable, can be assigned with `V`, `VX`, `VY` and `DIR`, respectively. Note that `DIR` is calculated based on `VX` and `VY`, thus the script must be operated for the latter two variables first. The experiment results are saved in the directory of `cache/`.
 
 Please refer to the source code for more details.

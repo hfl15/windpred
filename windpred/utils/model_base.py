@@ -216,7 +216,7 @@ def batch_run(n_runs, dir_log, func):
         dir_log_curr = os.path.join(dir_log, str(r))
         make_dir(dir_log_curr)
         func(dir_log_curr)
-
+    
 
 def reduce_multiple_runs(dir_log, csv_list, n_runs, station_name_list, columns=['all_rmse', 'big_rmse', 'small_rmse']):
     for csv in csv_list:

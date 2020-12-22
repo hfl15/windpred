@@ -12,7 +12,7 @@ from windpred.exproll.base import eval_mode
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'DIR'
+    target = 'V'
     model_name = 'gcn_seq_lstm_seq'
 
     if target == 'DIR':
