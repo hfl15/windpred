@@ -8,7 +8,6 @@ from windpred.utils.exp import main_spatial_duq
 
 from windpred.baseline.duq.main import run
 
-
 from windpred.exproll.base import eval_mode
 
 
@@ -20,7 +19,8 @@ def main(loss, layers):
     csv_result_list = ['metrics_model.csv', 'metrics_nwp.csv']
     for mode in mode_opts:
         func = run(features_history, features_future, loss=loss, layers=layers)
-        tag = tag + '_' + mode.split('_')[-1]
+        layers_str = [str(l) for l in layers]
+        tag = tag + '_' + '{}-{}'.format(loss, "-".join(layers_str))
         main_spatial_duq(target, mode, eval_mode, DefaultConfig(), tag, func, csv_result_list)
 
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # layers_opts = [[32], [32, 32], [50], [50, 50], [200], [200, 200], [300], [300, 300]]
     loss_opts = ['mae']
     layers_opts = [[32], [32, 32]]
-    
+
     ids_loss, ids_layers = np.meshgrid(range(len(loss_opts)), range(len(layers_opts)))
     ids_loss = ids_loss.ravel()
     ids_layers = ids_layers.ravel()
