@@ -12,21 +12,12 @@ from windpred.baseline.duq.main import run
 from windpred.exproll.base import eval_mode
 
 
-tag = tag_path(os.path.abspath(__file__), 2)
-config = DefaultConfig()
-
-target = 'V'
-features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
-csv_result_list = ['metrics_model.csv', 'metrics_nwp.csv']
-
-mode_opts = ['run', 'reduce', 'clear']
-# loss_opts = ['mae', 'mse', 'mve']
-# layers_opts = [[32], [32, 32], [50], [50, 50], [200], [200, 200], [300], [300, 300]]
-loss_opts = ['mae']
-layers_opts = [[32], [32, 32]]
-
-
-def a_pool(loss, layers):
+def main(loss, layers):
+    tag = tag_path(os.path.abspath(__file__), 2)
+    target = 'V'
+    mode_opts = ['run', 'reduce', 'clear']
+    features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
+    csv_result_list = ['metrics_model.csv', 'metrics_nwp.csv']
     for mode in mode_opts:
         func = run(features_history, features_future, loss=loss, layers=layers)
         tag = tag + '_' + mode.split('_')[-1]
@@ -34,17 +25,18 @@ def a_pool(loss, layers):
 
 
 if __name__ == '__main__':
-
+    # loss_opts = ['mae', 'mse', 'mve']
+    # layers_opts = [[32], [32, 32], [50], [50, 50], [200], [200, 200], [300], [300, 300]]
+    loss_opts = ['mae']
+    layers_opts = [[32], [32, 32]]
+    
     ids_loss, ids_layers = np.meshgrid(range(len(loss_opts)), range(len(layers_opts)))
     ids_loss = ids_loss.ravel()
     ids_layers = ids_layers.ravel()
 
     n_processes = min(max(os.cpu_count()-2, 1), len(ids_loss))
     with Pool(n_processes) as p:
-        p.starmap(a_pool, [(loss_opts[iloss], layers_opts[ids_loss]) for iloss, ilay in zip(ids_loss, ids_layers)])
-
-
-
+        p.starmap(main, [(loss_opts[iloss], layers_opts[ilay]) for iloss, ilay in zip(ids_loss, ids_layers)])
 
 
     # from IPython import embed; embed()
