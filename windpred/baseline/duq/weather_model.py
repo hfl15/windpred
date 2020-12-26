@@ -270,80 +270,6 @@ def Seq2Seq_MVE(id_embd, time_embd,
 
     return model
 
-# def Seq2Seq_MVE(id_embd, time_embd,
-#             lr, decay,
-#             num_input_features, num_output_features,
-#             num_decoder_features, layers,
-#             loss, regulariser, dropout_rate):
-#     optimiser = keras.optimizers.Adam(lr=lr, decay=decay)
-#     # Define an input sequence.
-#     encoder_inputs = keras.layers.Input(shape=(None, num_input_features), name='encoder_inputs')
-#     # Create a list of RNN Cells, these are then concatenated into a single layer
-#     # with the RNN layer.
-#     encoder_cells = []
-#     for hidden_neurons in layers:
-#         encoder_cells.append(keras.layers.GRUCell(hidden_neurons,
-#                                                   kernel_regularizer = regulariser,
-#                                                   recurrent_regularizer = regulariser,
-#                                                   bias_regularizer = regulariser))
-#
-#     encoder = keras.layers.RNN(encoder_cells, return_state=True)
-#     encoder_outputs_and_states = encoder(encoder_inputs)
-#     # Discard encoder outputs and only keep the states.
-#     encoder_states = encoder_outputs_and_states[1:]
-#     # Define a decoder sequence.
-#     decoder_inputs = keras.layers.Input(shape=(None, num_decoder_features), name='decoder_inputs')
-#
-#     decoder_inputs_id = keras.layers.Input(shape=(None,), name='id_inputs')
-#     decoder_inputs_id_embd = Embedding(input_dim=10, output_dim=2, name='id_embedding')(decoder_inputs_id)
-#
-#     decoder_inputs_time = keras.layers.Input(shape=(None,), name='time_inputs')
-#     decoder_inputs_time_embd = Embedding(input_dim=37, output_dim=2, name='time_embedding')(decoder_inputs_time)
-#
-#     if id_embd and (not time_embd):
-#         decoder_concat = concatenate([decoder_inputs, decoder_inputs_id_embd], axis=-1, name='concat_inputs_id')
-#     elif id_embd and time_embd:
-#         decoder_concat = concatenate([decoder_inputs, decoder_inputs_id_embd, decoder_inputs_time_embd], axis=-1, name='concat_inputs_id_time')
-#     elif (not id_embd) and (not time_embd):
-#         decoder_concat = decoder_inputs
-#     elif (not id_embd) and time_embd:
-#         decoder_concat = concatenate([decoder_inputs, decoder_inputs_time_embd], axis=-1, name='concat_inputs_time')
-#
-#     decoder_cells = []
-#     for hidden_neurons in layers:
-#         decoder_cells.append(keras.layers.GRUCell(hidden_neurons,
-#                                                   kernel_regularizer = regulariser,
-#                                                   recurrent_regularizer = regulariser,
-#                                                   bias_regularizer = regulariser))
-#
-#     decoder = keras.layers.RNN(decoder_cells, return_sequences=True, return_state=True)
-#     decoder_outputs_and_states = decoder(decoder_concat, initial_state=encoder_states)
-#
-#     decoder_outputs = decoder_outputs_and_states[0]
-#
-#     output_dense = keras.layers.Dense(num_output_features,
-#                                        activation='sigmoid',
-#                                        kernel_regularizer = regulariser,
-#                                        bias_regularizer = regulariser, name='output_mean')
-#
-#     variance_dense = keras.layers.Dense(num_output_features,
-#                                        activation='softplus',
-#                                        kernel_regularizer = regulariser,
-#                                        bias_regularizer = regulariser, name='output_variance')
-#
-#     mean_outputs = output_dense(decoder_outputs)
-#     variance_outputs = variance_dense(decoder_outputs)
-#
-#     mve_outputs = concatenate([mean_outputs, variance_outputs], axis=-1, name = 'output_mve')
-#
-#     if id_embd and (not time_embd):
-#         model = keras.models.Model(inputs=[encoder_inputs, decoder_inputs, decoder_inputs_id], outputs=[mean_outputs])
-#     elif id_embd and time_embd:
-#         model = keras.models.Model(inputs=[encoder_inputs, decoder_inputs, decoder_inputs_id, decoder_inputs_time], outputs=[mve_outputs])
-#     elif (not id_embd) and (not time_embd):
-#         model = keras.models.Model(inputs=[encoder_inputs, decoder_inputs], outputs=[mean_outputs])
-#
-#     return model
 
 def Seq2Seq_MVE_subnets(id_embd, time_embd,
             lr, decay,
@@ -421,6 +347,7 @@ def Seq2Seq_MVE_subnets(id_embd, time_embd,
         model = keras.models.Model(inputs=[encoder_inputs, decoder_inputs], outputs=[mean_outputs])
 
     return model
+
 
 def Seq2Seq_MVE_subnets_swish(id_embd, time_embd,
             lr, decay,

@@ -181,7 +181,7 @@ class DUQPredictor(object):
             np.savetxt(os.path.join(self.dir_log, 'y_pred_{}.txt'.format(station_name)), y_pred)
 
 
-def run(features_history, features_future):
+def run(features_history, features_future, loss='mae', layers=[50, 50]):
     def _run(config: DefaultConfig, dir_log, data_generator_spatial, target):
         train_data, val_data, test_data = get_data(data_generator_spatial, config.station_name_list, target,
                                                    features_history, features_future)
@@ -200,6 +200,9 @@ def run(features_history, features_future):
         param.num_stations = len(config.station_name_list)
         param.num_variables_to_predict = 1
         param.num_statistics_to_predict = param.num_variables_to_predict * 2
+        # critical hyper-parameters
+        param.loss = loss
+        param.layers = layers
 
         duq = DUQPredictor(target, dir_log, param, data_generator_spatial, config.station_name_list)
         duq.train(train_dict, val_dict)
@@ -207,32 +210,5 @@ def run(features_history, features_future):
         K.clear_session()
 
     return _run
-
-
-# def run(target, config: DefaultConfig, dir_log, data_generator_spatial, features_history, features_future):
-#     train_data, val_data, test_data = get_data(data_generator_spatial, config.station_name_list, target,
-#                                                features_history, features_future)
-#
-#     train_dict = {'input_obs': train_data[0], 'input_ruitu': train_data[1], 'ground_truth': train_data[2]}
-#     val_dict = {'input_obs': val_data[0], 'input_ruitu': val_data[1], 'ground_truth': val_data[2]}
-#     test_dict = {'input_obs': test_data[0], 'input_ruitu': test_data[1], 'ground_truth': test_data[2]}
-#
-#     param = ParameterConfig()
-#     param.num_input_features = len(features_history)
-#     param.num_output_features = 1
-#     param.num_decoder_features = len(features_future)
-#     param.input_sequence_length = config.window
-#     param.target_sequence_length = config.target_size
-#     param.num_steps_to_predict = config.target_size
-#     param.num_stations = len(config.station_name_list)
-#     param.num_variables_to_predict = 1
-#     param.num_statistics_to_predict = param.num_variables_to_predict * 2
-#
-#     duq = DUQPredictor(target, dir_log, param, data_generator_spatial, config.station_name_list)
-#     duq.train(train_dict, val_dict)
-#     duq.test(test_dict)
-#     K.clear_session()
-
-
 
 

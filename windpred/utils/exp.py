@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from .base import DIR_LOG, make_dir
 from .data_parser import DataGeneratorSpatial
@@ -33,6 +34,10 @@ def main_spatial(target, mode, eval_mode, config:DefaultConfig, tag, func, csv_r
                       func(config.station_name_list, dir_log_curr, data_generator_spatial, target, config.n_epochs))
     elif mode.startswith('reduce') and csv_result_list is not None:
         reduce(csv_result_list, target, dir_log_target, config.n_runs, config.station_name_list)
+    elif mode.startswith('clear'):
+        paths = [p for p in os.listdir(dir_log_target) if not p.endswith('.csv')]
+        for p in paths:
+            shutil.rmtree(os.path.join(dir_log_target, p))
     else:
         raise ValueError("The setting can not be found!")
 
@@ -55,5 +60,9 @@ def main_spatial_duq(target, mode, eval_mode, config: DefaultConfig, tag, func, 
                       func(config, dir_log_curr, data_generator_spatial, target))
     elif mode.startswith('reduce') and csv_result_list is not None:
         reduce(csv_result_list, target, dir_log_target, config.n_runs, config.station_name_list)
+    elif mode.startswith('clear'):
+        paths = [p for p in os.listdir(dir_log_target) if not p.endswith('.csv')]
+        for p in paths:
+            shutil.rmtree(os.path.join(dir_log_target, p))
     else:
         raise ValueError("The setting can not be found!")
