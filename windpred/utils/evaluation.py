@@ -91,14 +91,21 @@ def evaluate_rmse(desc, y, y_pred, big_wind):
 
 
 class Evaluator(object):
+    metrics = ['big_rmse', 'small_rmse', 'all_rmse']
+
     def __init__(self, dir_out, name):
         self.dir_out = os.path.join(dir_out, 'evaluate')
         make_dir(self.dir_out)
         self.name = name
-        self.res_template = {'big_rmse': [], 'small_rmse': [], 'all_rmse': []}
-        self.res = self.res_template.copy()
+        self.res = self.init_res()
         self.count = 0
         self.keys = []
+
+    def init_res(self):
+        res = dict()
+        for m in self.metrics:
+            res[m] = []
+        return res
 
     def evaluate(self, y, y_pred, filter_big_wind):
         small_wind = [not b for b in filter_big_wind]
@@ -112,7 +119,7 @@ class Evaluator(object):
         print("Big wind:\trmse={0:.4f}".format(big_rmse))
         print("Small wind:\trmse={0:.4f}".format(small_rmse))
 
-        res = self.res_template.copy()
+        res = self.init_res()
         res['big_rmse'] = big_rmse
         res['small_rmse'] = small_rmse
         res['all_rmse'] = rmse
@@ -145,14 +152,13 @@ class Evaluator(object):
 
 
 class EvaluatorDir(Evaluator):
+    metrics = ['big_bias', 'big_rmse', 'big_mae', 'big_hit',
+               'small_bias', 'small_rmse', 'small_mae', 'small_hit',
+               'all_bias', 'all_rmse', 'all_mae', 'all_hit']
+
     def __init__(self, dir_out, name):
         super(EvaluatorDir, self).__init__(dir_out, name)
-        self.res_template = {
-            'big_bias': [],     'big_rmse': [],     'big_mae': [], 'big_hit':[],
-            'small_bias': [],   'small_rmse': [],   'small_mae': [], 'small_hit':[],
-            'all_bias': [],     'all_rmse': [],     'all_mae': [], 'all_hit':[]
-        }
-        self.res = self.res_template.copy()
+        self.res = self.init_res()
 
     def evaluate(self, y, y_pred, filter_big_wind):
         small_wind = [not b for b in filter_big_wind]
@@ -166,7 +172,7 @@ class EvaluatorDir(Evaluator):
         print("Big wind:\tbias={0:.4f},\trmse={1:.4f},\tmae={2:.4f},\thit={3:.4f}".format(big_bias, big_rmse, big_mae, big_hit))
         print("Small wind:\tbias={0:.4f},\trmse={1:.4f},\tmae={2:.4f},\thit={3:.4f}".format(small_bias, small_rmse, small_mae, small_hit))
 
-        res = self.res_template.copy()
+        res = self.init_res()
         res['big_bias'] = big_bias
         res['big_rmse'] = big_rmse
         res['big_mae'] = big_mae

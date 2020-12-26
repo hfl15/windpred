@@ -5,10 +5,16 @@ from scipy import stats
 
 import matplotlib.pyplot as plt
 
+import windpred
 
-DIR_LOG = '../cache/'
-DATA_DIR = '../../data/obs'
-NWP_DIR = '../../data/nwp'
+"""
+    Configure
+"""
+
+DIR_ROOT = os.path.dirname(windpred.__file__)
+DIR_LOG = os.path.join(DIR_ROOT, 'cache')
+DATA_DIR = os.path.join(DIR_ROOT, 'data', 'obs')
+NWP_DIR = os.path.join(DIR_ROOT, 'data', 'nwp')
 
 
 """
@@ -84,6 +90,7 @@ def tag_path(path, nback=1):
 def make_dir(path):
     if os.path.exists(path) is False:
         os.makedirs(path)
+    return path
 
 
 """

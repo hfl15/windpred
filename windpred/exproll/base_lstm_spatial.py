@@ -27,4 +27,4 @@ if __name__ == '__main__':
 
         for mode in ['run', 'reduce']:
             func = lstm_spatial.run_lstm(features_history, features_future, concat_mode, model_mode)
-            main_spatial(target, mode, eval_mode, DefaultConfig, tag, func, csv_result_list)
+            main_spatial(target, mode, eval_mode, DefaultConfig(), tag, func, csv_result_list)

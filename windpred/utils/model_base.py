@@ -28,8 +28,8 @@ class DefaultConfig(object):
     x_divide_std = True
 
     n_epochs = 1000
-    n_runs = 2
-    # n_runs = 10
+    # n_runs = 2  # TODO: for test
+    n_runs = 10
 
     obs_data_path_list, nwp_path = get_files_path()
     station_name_list = [get_station_name(path) for path in obs_data_path_list]
@@ -198,7 +198,9 @@ def reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list):
         else:
             reduce_multiple_runs(dir_log_exp, csv_result_list, n_runs, station_name_list)
 
-    csv_list = ['{}_agg_mean.csv'.format(f.split('.')[0]) for f in csv_result_list]
+    csv_list_mean = ['{}_agg_mean.csv'.format(f.split('.')[0]) for f in csv_result_list]
+    csv_list_std = ['{}_agg_std.csv'.format(f.split('.')[0]) for f in csv_result_list]
+    csv_list = csv_list_mean + csv_list_std
     if target == 'DIR':
         reduce_multiple_splits_dir(dir_log_target, csv_list)
     else:
