@@ -38,14 +38,13 @@ def main_spatial(target, mode, eval_mode, config:DefaultConfig, tag, func, csv_r
 
 
 def main_spatial_duq(target, mode, eval_mode, config: DefaultConfig, tag, func, csv_result_list=None):
-    dir_log_target = os.path.join(DIR_LOG, tag, target)
-    make_dir(dir_log_target)
+    dir_log_target = make_dir(os.path.join(DIR_LOG, tag, target))
 
     if mode.startswith('run'):
         data_generator_spatial = DataGeneratorSpatial(config.period, config.window, norm=config.norm,
                                                       x_divide_std=config.x_divide_std)
         for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
-            dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
+            dir_log_exp = make_dir(os.path.join(dir_log_target, str(MONTH_LIST[wid])))
             months = get_month_list(eval_mode, wid)
             data_generator_spatial.set_data(months)
             data_generator_spatial.prepare_data(config.target_size,

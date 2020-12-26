@@ -14,7 +14,7 @@ if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
     config = DefaultConfig()
 
-    mode = 'reduce'
+    mode = 'run'
     target = 'V'
     features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
     csv_result_list = ['metrics_model.csv', 'metrics_nwp.csv']

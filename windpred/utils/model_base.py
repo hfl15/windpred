@@ -215,8 +215,7 @@ def reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list):
 def batch_run(n_runs, dir_log, func):
     for r in range(n_runs):
         K.clear_session()
-        dir_log_curr = os.path.join(dir_log, str(r))
-        make_dir(dir_log_curr)
+        dir_log_curr = make_dir(os.path.join(dir_log, str(r)))
         func(dir_log_curr)
     
 
