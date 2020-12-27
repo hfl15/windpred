@@ -9,6 +9,8 @@ Detail:
         - tensorflow 1.7, pass.
     Therefore, my final choice is keras=2.2.4 and tensorflow=1.7.0.
 
+
+
 """
 
 import os
@@ -74,6 +76,10 @@ def get_data(data_generator, station_name_list, target, features_history_in, fea
 
 
 class DUQPredictor(object):
+    """
+        To leave the original configuration as unchanged as possible,
+        this class obeys the DUQ primitive named system.
+    """
     def __init__(self,
                  target: str,
                  dir_log: str,
@@ -200,7 +206,9 @@ def run(features_history, features_future, loss='mae', layers=[50, 50]):
         param.num_stations = len(config.station_name_list)
         param.num_variables_to_predict = 1
         param.num_statistics_to_predict = param.num_variables_to_predict * 2
-        # critical hyper-parameters
+        # Critical hyper-parameters.
+        # Note: These settings will not change the initialization model name. Therefore, the default names used in DUQ
+        # doesn't need to be changed.
         param.loss = loss
         param.layers = layers
 
