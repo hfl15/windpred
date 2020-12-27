@@ -12,7 +12,7 @@ from windpred.exproll.base import eval_mode
 
 
 def main(loss, layers):
-    tag = tag_path(os.path.abspath(__file__), 2)
+    tag_g = tag_path(os.path.abspath(__file__), 2)
     target = 'V'
     mode_opts = ['run', 'reduce', 'clear']
     features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
@@ -20,7 +20,7 @@ def main(loss, layers):
     for mode in mode_opts:
         func = run(features_history, features_future, loss=loss, layers=layers)
         layers_str = [str(l) for l in layers]
-        tag = tag + '_' + '{}-{}'.format(loss, "-".join(layers_str))
+        tag = tag_g + '_' + '{}-{}'.format(loss, "-".join(layers_str))
         main_spatial_duq(target, mode, eval_mode, DefaultConfig(), tag, func, csv_result_list)
 
 
@@ -36,7 +36,6 @@ if __name__ == '__main__':
     ids_layers = ids_layers.ravel()
 
     n_processes = min(max(os.cpu_count()-2, 1), len(ids_loss))
-    # with Pool(n_processes) as p:
     with get_context("spawn").Pool(n_processes) as p:
         p.starmap(main, [(loss_opts[iloss], layers_opts[ilay]) for iloss, ilay in zip(ids_loss, ids_layers)])
 
