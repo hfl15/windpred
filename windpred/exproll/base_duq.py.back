@@ -1,6 +1,5 @@
 import os
 import numpy as np
-from multiprocessing import Pool
 
 from windpred.utils.base import tag_path
 from windpred.utils.model_base import DefaultConfig
@@ -25,20 +24,20 @@ def main(loss, layers):
 
 
 if __name__ == '__main__':
-    # loss_opts = ['mae', 'mse', 'mve']
-    # layers_opts = [[32], [32, 32], [50], [50, 50], [200], [200, 200], [300], [300, 300]]
-    # TODO: settings for stest
-    loss_opts = ['mae']
-    layers_opts = [[32], [32, 32]]
+    loss_opts = ['mae', 'mse', 'mve']
+    layers_opts = [[32], [32, 32], [50], [50, 50], [200], [200, 200], [300], [300, 300]]
+    # # TODO: settings for stest
+    # loss_opts = ['mae']
+    # layers_opts = [[32], [32, 32]]
 
     ids_loss, ids_layers = np.meshgrid(range(len(loss_opts)), range(len(layers_opts)))
     ids_loss = ids_loss.ravel()
     ids_layers = ids_layers.ravel()
+    print("There are {} groups of parameters.".format(len(ids_loss)))
 
-    # n_processes = min(max(os.cpu_count()-3, 1), len(ids_loss))
-    n_processes = 2
-    with Pool(n_processes) as p:
-        p.starmap(main, [(loss_opts[iloss], layers_opts[ilay]) for iloss, ilay in zip(ids_loss, ids_layers)])
+    istar, iend = 0, 6
+    for iloss, ilay in zip(ids_loss[istar:iend], ids_layers[istar:iend]):
+        main(loss_opts[iloss], layers_opts[ilay])
 
 
 
