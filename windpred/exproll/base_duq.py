@@ -25,11 +25,11 @@ def main(loss, layers):
 
 
 if __name__ == '__main__':
-    # loss_opts = ['mae', 'mse', 'mve']
-    # layers_opts = [[32], [32, 32], [50], [50, 50], [200], [200, 200], [300], [300, 300]]
+    loss_opts = ['mae', 'mse', 'mve']
+    layers_opts = [[32], [32, 32], [50], [50, 50], [200], [200, 200], [300], [300, 300]]
     # # TODO: settings for stest
-    loss_opts = ['mae']
-    layers_opts = [[32], [32, 32]]
+    # loss_opts = ['mae']
+    # layers_opts = [[32], [32, 32]]
 
     ids_loss, ids_layers = np.meshgrid(range(len(loss_opts)), range(len(layers_opts)))
     ids_loss = ids_loss.ravel()
