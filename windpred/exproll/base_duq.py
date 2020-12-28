@@ -38,6 +38,3 @@ if __name__ == '__main__':
     n_processes = min(max(os.cpu_count()-2, 1), len(ids_loss))
     with get_context("spawn").Pool(n_processes) as p:
         p.starmap(main, [(loss_opts[iloss], layers_opts[ilay]) for iloss, ilay in zip(ids_loss, ids_layers)])
-
-
-
