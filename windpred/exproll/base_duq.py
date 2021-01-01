@@ -27,14 +27,34 @@ def main(loss, layers):
 if __name__ == '__main__':
     loss_opts = ['mae', 'mse', 'mve']
     layers_opts = [[32], [32, 32], [50], [50, 50], [200], [200, 200], [300], [300, 300]]
-    # # TODO: settings for stest
-    # loss_opts = ['mae']
-    # layers_opts = [[32], [32, 32]]
+
+    params_finished = [
+        ('mae', [32]),
+        ('mae', [32, 32]),
+        ('mae', [50]),
+        ('mae', [50, 50]),
+        ('mae', [200]),
+        ('mse', [32]),
+        ('mse', [32, 32]),
+        ('mse', [50]),
+        ('mse', [50, 50]),
+        ('mse', [200]),
+        ('mve', [32]),
+        ('mve', [32, 32]),
+        ('mve', [50]),
+        ('mve', [50, 50])
+    ]
 
     ids_loss, ids_layers = np.meshgrid(range(len(loss_opts)), range(len(layers_opts)))
     ids_loss = ids_loss.ravel()
     ids_layers = ids_layers.ravel()
 
-    n_processes = min(max(os.cpu_count()-2, 1), len(ids_loss))
+    n_processes = min(max(os.cpu_count()//2, 1), len(ids_loss))
     with get_context("spawn").Pool(n_processes) as p:
-        p.starmap(main, [(loss_opts[iloss], layers_opts[ilay]) for iloss, ilay in zip(ids_loss, ids_layers)])
+        params = [(loss_opts[iloss], layers_opts[ilay]) for iloss, ilay in zip(ids_loss, ids_layers)]
+        for par in params_finished:
+            params.remove(par)
+        p.starmap(main, params)
+
+
+

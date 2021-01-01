@@ -68,11 +68,3 @@ def main(tag, config, target, mode, eval_mode, cls_model, csv_result_list=None):
         if csv_result_list is None:
             csv_result_list = ['metrics_model.csv', 'metrics_nwp.csv']
         reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list)
-
-
-
-
-
-
-
-

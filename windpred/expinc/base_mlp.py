@@ -15,15 +15,15 @@ if __name__ == '__main__':
     feature_mode_list = ['history', 'future', 'history_future']
 
     if target == 'DIR':
-        for mode in feature_mode_list:
+        for feature_mode in feature_mode_list:
             tag_file_list = [None]
-            file_exp_in = os.path.join(tag, mode)
+            file_exp_in = os.path.join(tag, feature_mode)
             exp_dir.main('run', eval_mode, file_exp_in, tag_file_list)
             exp_dir.main('reduce', eval_mode, file_exp_in, tag_file_list)
     else:
         for mode in ['run', 'reduce']:
             for feature_mode in feature_mode_list:
-                temporal_nn.main(tag, DefaultConfig, target, mode+'-'+feature_mode, eval_mode, BaseMLP)
+                temporal_nn.main(tag, DefaultConfig(), target, mode+'-'+feature_mode, eval_mode, BaseMLP)
 
 
 
