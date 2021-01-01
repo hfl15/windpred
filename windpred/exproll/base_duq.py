@@ -52,7 +52,7 @@ if __name__ == '__main__':
     for par in params_finished:
         params.remove(par)
 
-    n_processes = min(max(os.cpu_count()//2, 1), len(params))
+    n_processes = min(5, max(os.cpu_count() // 2, 1), len(params))
     from IPython import embed; embed()
     with get_context("spawn").Pool(n_processes) as p:
         p.starmap(main, params)
