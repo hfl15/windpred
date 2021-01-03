@@ -31,7 +31,9 @@ if __name__ == '__main__':
     ids_loss, ids_layers = np.meshgrid(range(len(loss_opts)), range(len(layers_opts)))
     ids_loss = ids_loss.ravel()
     ids_layers = ids_layers.ravel()
+    params = [(loss_opts[iloss], layers_opts[ilay]) for iloss, ilay in zip(ids_loss, ids_layers)]
 
-    n_processes = min(max(os.cpu_count()-2, 1), len(ids_loss))
+    n_processes = min(5, max(os.cpu_count() // 2, 1), len(params))
     with get_context("spawn").Pool(n_processes) as p:
-        p.starmap(main, [(loss_opts[iloss], layers_opts[ilay]) for iloss, ilay in zip(ids_loss, ids_layers)])
+        p.starmap(main, params)
+
