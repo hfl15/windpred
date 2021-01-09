@@ -1,3 +1,7 @@
+"""
+    Try a batch of hyper-parameters that used in the primitive paper.
+"""
+
 import os
 import numpy as np
 from multiprocessing import get_context
