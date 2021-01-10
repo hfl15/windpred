@@ -1,26 +1,7 @@
-import os
-
-from windpred.utils.base import tag_path
-from windpred.utils.model_base import DefaultConfig
-from windpred.utils import exp_dir
-
-from windpred.baseline.convention import main, MODELS
-
-from windpred.exproll.base import eval_mode
-
+from windpred.exp.base_convention import run
+from windpred.exproll.base import *
 
 if __name__ == '__main__':
-    tag = tag_path(os.path.abspath(__file__), 2)
+    tag = get_tag(__file__)
     target = 'VX'
-
-    if target == 'DIR':
-        for model_name in MODELS.keys():
-            file_in = os.path.join(tag, model_name)
-            tag_file_list = [None]
-            exp_dir.main_old('run', eval_mode, file_in, tag_file_list)
-            exp_dir.main_old('reduce', eval_mode, file_in, tag_file_list)
-    else:
-        for model_name in MODELS.keys():
-            main(tag, DefaultConfig(), target, 'run', eval_mode, model_name)
-            main(tag, DefaultConfig(), target, 'reduce', eval_mode, model_name)
-
+    run(target, tag, eval_mode)
