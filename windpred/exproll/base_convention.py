@@ -11,8 +11,8 @@ from windpred.exproll.base import eval_mode
 
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
-    mode = 'run'
-    target = 'DIR'
+    target = 'VX'
+
     if target == 'DIR':
         for model_name in MODELS.keys():
             file_in = os.path.join(tag, model_name)
@@ -21,5 +21,6 @@ if __name__ == '__main__':
             exp_dir.main('reduce', eval_mode, file_in, tag_file_list)
     else:
         for model_name in MODELS.keys():
-            main(tag, DefaultConfig(), target, mode, eval_mode, model_name)
+            main(tag, DefaultConfig(), target, 'run', eval_mode, model_name)
+            main(tag, DefaultConfig(), target, 'reduce', eval_mode, model_name)
 

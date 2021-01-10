@@ -2,6 +2,7 @@ import os
 
 from windpred.utils.base import tag_path
 from windpred.utils.model_base import DefaultConfig
+from windpred.utils import exp_dir
 
 from windpred.baseline.convention import main, MODELS
 
@@ -12,6 +13,14 @@ if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
     mode = 'run'
     target = 'V'
-    for model_name in MODELS.keys():
-        main(tag, DefaultConfig(), target, mode, eval_mode, model_name)
+
+    if target == 'DIR':
+        for model_name in MODELS.keys():
+            file_in = os.path.join(tag, model_name)
+            tag_file_list = [None]
+            exp_dir.main('run', eval_mode, file_in, tag_file_list)
+            exp_dir.main('reduce', eval_mode, file_in, tag_file_list)
+    else:
+        for model_name in MODELS.keys():
+            main(tag, DefaultConfig(), target, mode, eval_mode, model_name)
 
