@@ -16,8 +16,8 @@ if __name__ == '__main__':
 
     if target == 'DIR':
         tag_file_list = mhstn.get_tags()
-        exp_dir.main('run', eval_mode, tag, tag_file_list)
-        exp_dir.main('reduce', eval_mode, tag, tag_file_list)
+        exp_dir.main_old('run', eval_mode, tag, tag_file_list)
+        exp_dir.main_old('reduce', eval_mode, tag, tag_file_list)
     else:
         features_history = get_covariates_history(target)
         features_future = ['NEXT_NWP_{}'.format(target)]

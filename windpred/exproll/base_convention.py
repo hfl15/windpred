@@ -17,8 +17,8 @@ if __name__ == '__main__':
         for model_name in MODELS.keys():
             file_in = os.path.join(tag, model_name)
             tag_file_list = [None]
-            exp_dir.main('run', eval_mode, file_in, tag_file_list)
-            exp_dir.main('reduce', eval_mode, file_in, tag_file_list)
+            exp_dir.main_old('run', eval_mode, file_in, tag_file_list)
+            exp_dir.main_old('reduce', eval_mode, file_in, tag_file_list)
     else:
         for model_name in MODELS.keys():
             main(tag, DefaultConfig(), target, 'run', eval_mode, model_name)

@@ -29,7 +29,43 @@ def run_dir_from_vxy(data_generator_list, dir_vx, dir_vy, dir_log, tag_file=None
             np.savetxt(os.path.join(dir_log_curr, 'y_pred_{}.txt'.format(station_name+file_suffix)), y_pred_dir)
 
 
-def main(mode, eval_mode, file_exp_in, tag_file_list):
+def main(mode, config: DefaultConfig, eval_mode, file_exp_in, tag_file_list):
+    target = 'DIR'
+    dir_in = os.path.join(DIR_LOG, file_exp_in)
+    dir_log_target = os.path.join(dir_in, target)
+    make_dir(dir_log_target)
+
+    if mode.startswith('run'):
+        data_generator_list = []
+        for obs_data_path in config.obs_data_path_list:
+            data_generator = DataGenerator(config.period, config.window, path=obs_data_path)
+            data_generator_list.append(data_generator)
+
+        for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
+            dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
+            months = get_month_list(eval_mode, wid)
+            for data_generator in data_generator_list:
+                data_generator.set_data(months)
+                data_generator.prepare_data(config.target_size,
+                                            train_step=config.train_step, test_step=config.test_step,
+                                            single_step=config.single_step)
+            dir_vx = os.path.join(dir_in, 'VX', str(MONTH_LIST[wid]))
+            dir_vy = os.path.join(dir_in, 'VY', str(MONTH_LIST[wid]))
+
+            for tag_file in tag_file_list:
+                run_dir_from_vxy(data_generator_list, dir_vx, dir_vy, dir_log_exp, tag_file, n_runs=config.n_runs)
+
+    elif mode.startswith('reduce'):
+        csv_result_list = []
+        for tag_file in tag_file_list:
+            csv = 'metrics_model.csv' if tag_file is None else 'metrics_model_{}.csv'.format(tag_file)
+            csv_result_list.append(csv)
+            csv = 'metrics_nwp.csv' if tag_file is None else 'metrics_nwp_{}.csv'.format(tag_file)
+            csv_result_list.append(csv)
+        reduce(csv_result_list, target, dir_log_target, config.n_runs, config.station_name_list)
+
+
+def main_old(mode, eval_mode, file_exp_in, tag_file_list):
     target_size = DefaultConfig.target_size
     period = DefaultConfig.period
     window = DefaultConfig.window

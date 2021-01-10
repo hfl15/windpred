@@ -17,8 +17,8 @@ if __name__ == '__main__':
         for mode in feature_mode_list:
             tag_file_list = [None]
             file_exp_in = os.path.join(tag, mode)
-            exp_dir.main('run', eval_mode, file_exp_in, tag_file_list)
-            exp_dir.main('reduce', eval_mode, file_exp_in, tag_file_list)
+            exp_dir.main_old('run', eval_mode, file_exp_in, tag_file_list)
+            exp_dir.main_old('reduce', eval_mode, file_exp_in, tag_file_list)
     else:
         for mode in ['run', 'reduce']:
             for feature_mode in feature_mode_list:

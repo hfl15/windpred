@@ -17,8 +17,8 @@ if __name__ == '__main__':
 
     if target == 'DIR':
         tag_file_list = [model_name]
-        exp_dir.main('run', eval_mode, tag, tag_file_list)
-        exp_dir.main('reduce', eval_mode, tag, tag_file_list)
+        exp_dir.main_old('run', eval_mode, tag, tag_file_list)
+        exp_dir.main_old('reduce', eval_mode, tag, tag_file_list)
     else:
         features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
         for mode in ['run', 'reduce']:
