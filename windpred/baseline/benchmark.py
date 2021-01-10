@@ -9,6 +9,7 @@ import pandas as pd
 from windpred.utils.base import make_dir
 from windpred.utils.data_parser import DataGenerator
 from windpred.utils.evaluation import Evaluator, EvaluatorDir
+from windpred.utils.model_base import DefaultConfig
 from windpred.utils.model_base import TESTING_SLIDING_WINDOW, MONTH_LIST, get_month_list
 
 
@@ -49,22 +50,22 @@ def reduce_multiple_splits_dir(path, csvf_list, col_name='all_mae'):
     reduce_multiple_splits(path, csvf_list, col_name)
 
 
-def main(tag, config, dir_log, eval_mode):
-    target_size = config.target_size
-    period = config.period
-    window = config.window
-    train_step = config.train_step
-    test_step = config.test_step
-    single_step = config.single_step
-    obs_data_path_list = config.obs_data_path_list
+def main(tag, config: DefaultConfig, dir_log, eval_mode):
+    # target_size = config.target_size
+    # period = config.period
+    # window = config.window
+    # train_step = config.train_step
+    # test_step = config.test_step
+    # single_step = config.single_step
+    # obs_data_path_list = config.obs_data_path_list
 
     target = 'V'
     dir_log_target = os.path.join(dir_log, tag, target)
     make_dir(dir_log_target)
 
     data_generator_list = []
-    for obs_data_path in obs_data_path_list:
-        data_generator = DataGenerator(period, window, path=obs_data_path)
+    for obs_data_path in config.obs_data_path_list:
+        data_generator = DataGenerator(config.period, config.window, path=obs_data_path)
         data_generator_list.append(data_generator)
 
     for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
@@ -72,8 +73,8 @@ def main(tag, config, dir_log, eval_mode):
         months = get_month_list(eval_mode, wid)
         for data_generator in data_generator_list:
             data_generator.set_data(months)
-            data_generator.prepare_data(target_size, train_step=train_step, test_step=test_step,
-                                        single_step=single_step)
+            data_generator.prepare_data(config.target_size, train_step=config.train_step, test_step=config.test_step,
+                                        single_step=config.single_step)
         run(data_generator_list, dir_log_exp, target)
 
     csv_list = ['metrics_model.csv', 'metrics_nwp.csv']
