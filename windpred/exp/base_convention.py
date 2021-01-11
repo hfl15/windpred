@@ -15,7 +15,6 @@ def run(target, tag, eval_mode):
                 exp_dir.main(mode, DefaultConfig(), eval_mode, file_in, tag_file_list)
     else:
         for model_name in convention.MODELS.keys():
-            for mode in ['reduce']:
-            # for mode in ['run', 'reduce']:
+            for mode in ['run', 'reduce']:
                 convention.main(tag, DefaultConfig(), target, mode, eval_mode, model_name)
 

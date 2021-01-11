@@ -6,22 +6,29 @@ from windpred.utils.model_base import DefaultConfig
 from windpred.baseline import convlstm
 from windpred.utils import exp_dir
 
-from windpred.exproll.base import eval_mode
+from windpred.exproll.base import *
+
+from windpred.exp.base_convlstm import run
 
 if __name__ == '__main__':
-    tag = tag_path(os.path.abspath(__file__), 2)
-
+    tag = get_tag(__file__)
     target = 'V'
-    model_name = 'convlstm'
+    run(target, tag, eval_mode)
 
-    if target == 'DIR':
-        tag_file_list = [model_name]
-        exp_dir.main_old('run', eval_mode, tag, tag_file_list)
-        exp_dir.main_old('reduce', eval_mode, tag, tag_file_list)
-    else:
-        features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
-        for mode in ['run', 'reduce']:
-            convlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future)
+# if __name__ == '__main__':
+#     tag = tag_path(os.path.abspath(__file__), 2)
+#
+#     target = 'V'
+#     model_name = 'convlstm'
+#
+#     if target == 'DIR':
+#         tag_file_list = [model_name]
+#         exp_dir.main_old('run', eval_mode, tag, tag_file_list)
+#         exp_dir.main_old('reduce', eval_mode, tag, tag_file_list)
+#     else:
+#         features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
+#         for mode in ['run', 'reduce']:
+#             convlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future)
 
 
 

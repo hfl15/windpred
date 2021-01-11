@@ -8,6 +8,7 @@ import os
 from windpred.utils.base import DIR_LOG, make_dir
 from windpred.utils.data_parser import DataGeneratorSpatial
 from windpred.utils.model_base import BasePredictor, batch_run
+from windpred.utils.model_base import DefaultConfig
 from windpred.utils.model_base import TESTING_SLIDING_WINDOW, MONTH_LIST, get_month_list, reduce
 from windpred.mhstn.base import get_data_spatial, run_spatial
 
@@ -98,35 +99,37 @@ def run_convlstm(station_name_list, dir_log, data_generator_spatial, target, n_e
                 x_tr, x_val, x_te, y_train_list, y_val_list, y_test_list, input_shape, tag_func)
 
 
-def main(target, mode, eval_mode, config, tag, model_name, features_history, features_future):
-    target_size = config.target_size
-    period = config.period
-    window = config.window
-    train_step = config.train_step
-    test_step = config.test_step
-    single_step = config.single_step
-    norm = config.norm
-    x_divide_std = config.x_divide_std
-    n_epochs = config.n_epochs
-    n_runs = config.n_runs
-    obs_data_path_list = config.obs_data_path_list
-    station_name_list = config.station_name_list
+def main(target, mode, eval_mode, config: DefaultConfig, tag, model_name, features_history, features_future):
+    # target_size = config.target_size
+    # period = config.period
+    # window = config.window
+    # train_step = config.train_step
+    # test_step = config.test_step
+    # single_step = config.single_step
+    # norm = config.norm
+    # x_divide_std = config.x_divide_std
+    # n_epochs = config.n_epochs
+    # n_runs = config.n_runs
+    # obs_data_path_list = config.obs_data_path_list
+    # station_name_list = config.station_name_list
 
     dir_log_target = os.path.join(DIR_LOG, tag, target)
     make_dir(dir_log_target)
 
     if mode == 'run':
-        data_generator_spatial = DataGeneratorSpatial(period, window, norm=norm, x_divide_std=x_divide_std)
+        data_generator_spatial = DataGeneratorSpatial(config.period, config.window, norm=config.norm,
+                                                      x_divide_std=config.x_divide_std)
         for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
             dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
             months = get_month_list(eval_mode, wid)
             data_generator_spatial.set_data(months)
-            data_generator_spatial.prepare_data(target_size,
-                                                train_step=train_step, test_step=test_step, single_step=single_step)
-            batch_run(n_runs, dir_log_exp,
+            data_generator_spatial.prepare_data(config.target_size,
+                                                train_step=config.train_step, test_step=config.test_step,
+                                                single_step=config.single_step)
+            batch_run(config.n_runs, dir_log_exp,
                       lambda dir_log_curr:
-                      run_convlstm(station_name_list, dir_log_curr, data_generator_spatial, target, n_epochs,
-                                   features_history, features_future, model_name))
+                      run_convlstm(config.station_name_list, dir_log_curr, data_generator_spatial, target,
+                                   config.n_epochs, features_history, features_future, model_name))
     elif mode == 'reduce':
         csv_result_list = ['metrics_model_{}.csv'.format(model_name), 'metrics_nwp_{}.csv'.format(model_name)]
-        reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list)
+        reduce(csv_result_list, target, dir_log_target, config.n_runs, config.station_name_list)

@@ -7,21 +7,23 @@ from windpred.utils import exp_dir
 from windpred.mhstn.base import get_covariates_history
 from windpred.baseline import convlstm
 
-from windpred.exproll.base import eval_mode
+from windpred.exproll.base import *
+from windpred.exp.base_convlstm import run_covar
 
 if __name__ == '__main__':
-    tag = tag_path(os.path.abspath(__file__), 2)
-
+    tag = get_tag(__file__)
     target = 'V'
-    model_name = 'convlstm'
+    run_covar(target, tag, eval_mode)
 
-    if target == 'DIR':
-        tag_file_list = [model_name]
-        exp_dir.main_old('run', eval_mode, tag, tag_file_list)
-        exp_dir.main_old('reduce', eval_mode, tag, tag_file_list)
-    else:
-        features_history = get_covariates_history(target)
-        features_future = ['NEXT_NWP_{}'.format(target)]
-        for mode in ['run', 'reduce']:
-            convlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future)
+    # model_name = 'convlstm'
+    #
+    # if target == 'DIR':
+    #     tag_file_list = [model_name]
+    #     exp_dir.main_old('run', eval_mode, tag, tag_file_list)
+    #     exp_dir.main_old('reduce', eval_mode, tag, tag_file_list)
+    # else:
+    #     features_history = get_covariates_history(target)
+    #     features_future = ['NEXT_NWP_{}'.format(target)]
+    #     for mode in ['run', 'reduce']:
+    #         convlstm.main(target, mode, eval_mode, DefaultConfig, tag, model_name, features_history, features_future)
 
