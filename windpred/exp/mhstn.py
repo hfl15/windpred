@@ -34,8 +34,11 @@ def run(target, tag, eval_mode):
 
 
 def run_covar(target, tag, eval_mode):
-    features_history = get_covariates_history(target)
-    features_future = ['NEXT_NWP_{}'.format(target)]
+    if target == 'DIR':
+        features_history = features_future = [None]
+    else:
+        features_history = get_covariates_history(target)
+        features_future = ['NEXT_NWP_{}'.format(target)]
     _run(target, tag, eval_mode, features_history, features_future)
     # if target == 'DIR':
     #     tag_file_list = mhstn.get_tags()

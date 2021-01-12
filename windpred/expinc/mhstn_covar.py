@@ -8,9 +8,10 @@ from windpred.utils import exp_dir
 from windpred.mhstn.base import CSV_RESULT_FILES, get_covariates_history
 from windpred.mhstn import mhstn
 
+from windpred.exp.mhstn import run_covar
 from windpred.expinc.base import *
 
-from windpred.exp.mhstn import run_covar
+
 
 if __name__ == '__main__':
     tag = get_tag(__file__)
