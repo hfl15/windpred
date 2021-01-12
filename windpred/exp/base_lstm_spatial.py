@@ -12,7 +12,7 @@ def run(target, tag, eval_mode):
     if target == 'DIR':
         tag_file_list = [None]
         for mode in ['run', 'reduce']:
-            exp_dir.main(mode, eval_mode, tag, tag_file_list)
+            exp_dir.main(mode, DefaultConfig(), eval_mode, tag, tag_file_list)
     else:
         features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
         concat_mode = 'parallel'
