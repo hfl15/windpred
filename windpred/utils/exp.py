@@ -15,9 +15,8 @@ def get_covariates_future_all():
     return ['NEXT_NWP_{}'.format(feat) for feat in ['V', 'VX', 'VY', 'DIRRadian', 'SLP', 'TP', 'RH']]
 
 
-def main_spatial(target, mode, eval_mode, config:DefaultConfig, tag, func, csv_result_list=None):
-    dir_log_target = os.path.join(DIR_LOG, tag, target)
-    make_dir(dir_log_target)
+def main_spatial(target, mode, eval_mode, config: DefaultConfig, tag, func, csv_result_list=None):
+    dir_log_target = make_dir(os.path.join(DIR_LOG, tag, target))
 
     if mode.startswith('run'):
         data_generator_spatial = DataGeneratorSpatial(config.period, config.window, norm=config.norm,
