@@ -1,9 +1,9 @@
-from windpred.exp.base_nn import run_lstm
+from windpred.exp.base_convlstm import run_covar_all
 from windpred.expinc.base import *
 
 
 if __name__ == '__main__':
     tag = get_tag(__file__)
     target = 'V'
-    run_lstm(target, tag, eval_mode)
+    run_covar_all(target, tag, eval_mode)
 

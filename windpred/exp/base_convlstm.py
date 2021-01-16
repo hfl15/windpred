@@ -1,5 +1,6 @@
 from windpred.utils.model_base import DefaultConfig
 from windpred.mhstn.base import get_covariates_history
+from windpred.utils.exp import get_covariates_history_all, get_covariates_future_all
 from windpred.baseline import convlstm
 from windpred.utils import exp_dir
 
@@ -28,3 +29,10 @@ def run_covar(target, tag, eval_mode):
         features_history = get_covariates_history(target)
         features_future = ['NEXT_NWP_{}'.format(target)]
     _run(target, tag, eval_mode, features_history, features_future)
+
+
+def run_covar_all(target, tag, eval_mode):
+    features_history = get_covariates_history_all()
+    features_future = get_covariates_future_all()
+    _run(target, tag, eval_mode, features_history, features_future)
+

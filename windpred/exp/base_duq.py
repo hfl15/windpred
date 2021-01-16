@@ -5,6 +5,8 @@ import os
 import numpy as np
 from multiprocessing import get_context
 
+from windpred.utils.exp import get_covariates_history_all, get_covariates_future_all
+from windpred.mhstn.base import get_covariates_history
 from windpred.utils.model_base import DefaultConfig
 from windpred.utils import exp_dir
 from windpred.utils.exp import main_spatial_duq
@@ -16,9 +18,7 @@ from windpred.baseline.duq.main import run as duqrun
 """
 
 
-def run_best(target, tag, eval_mode):
-    features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
-
+def _run_best(target, tag, eval_mode, features_history, features_future):
     if target == 'DIR':
         tag_file_list = [None]
         for mode in ['run', 'reduce']:
@@ -30,6 +30,26 @@ def run_best(target, tag, eval_mode):
         func = duqrun(features_history, features_future, loss=loss, layers=layers)
         for mode in ['run', 'reduce']:
             main_spatial_duq(target, mode, eval_mode, DefaultConfig(), tag, func, csv_result_list)
+
+
+def run_best(target, tag, eval_mode):
+    features_history, features_future = [target], ['NEXT_NWP_{}'.format(target)]
+    _run_best(target, tag, eval_mode, features_history, features_future)
+
+
+def run_best_covar(target, tag, eval_mode):
+    if target == 'DIR':
+        features_history = features_future = [None]
+    else:
+        features_history = get_covariates_history(target)
+        features_future = ['NEXT_NWP_{}'.format(target)]
+    _run_best(target, tag, eval_mode, features_history, features_future)
+
+
+def run_best_covar_all(target, tag, eval_mode):
+    features_history = get_covariates_history_all()
+    features_future = get_covariates_future_all()
+    _run_best(target, tag, eval_mode, features_history, features_future)
 
 
 """

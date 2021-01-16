@@ -1,5 +1,4 @@
 from windpred.exp.mhstn import run
-
 from windpred.expinc.base import *
 
 if __name__ == '__main__':
