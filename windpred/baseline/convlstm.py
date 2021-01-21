@@ -28,7 +28,7 @@ class ConvLSTM(BasePredictor):
                     shape=self.input_shape
                 ),
                 tf.keras.layers.ConvLSTM2D(
-                    filters=32, kernel_size=(5, 5), padding="same", return_sequences=True
+                    filters=64, kernel_size=(5, 5), padding="same", return_sequences=True
                     # return_sequences=True is critical to obtain high performance.
                 ),
                 tf.keras.layers.Flatten(),
