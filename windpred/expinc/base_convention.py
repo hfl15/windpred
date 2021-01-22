@@ -1,8 +1,10 @@
-from windpred.exp.base_convention import run
+from windpred.exp.base_convention import run_local_funcs
 from windpred.expinc.base import *
+
 
 if __name__ == '__main__':
     tag = get_tag(__file__)
-    target = 'VX'
-    run(target, tag, eval_mode)
+    target = 'V'
+    for key, fun in run_local_funcs.items():
+        fun(target, '{}/{}'.format(tag, key), eval_mode)
 

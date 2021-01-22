@@ -16,7 +16,7 @@ def run(target, tag, eval_mode, model_cls):
     else:
         for mode in ['run', 'reduce']:
             for feature_mode in feature_mode_list:
-                temporal_nn.main(tag, DefaultConfig, target, mode+'-'+feature_mode, eval_mode, model_cls)
+                temporal_nn.main(tag, DefaultConfig(), target, mode+'-'+feature_mode, eval_mode, model_cls)
 
 
 def run_lstm(target, tag, eval_mode):
