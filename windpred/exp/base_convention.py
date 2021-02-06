@@ -36,10 +36,12 @@ def run_f(target, tag, eval_mode):
 
 
 def run_spatial(target, tag, eval_mode):
+    """It is really time consuming."""
     _run(target, tag, eval_mode, with_spatial=True)
 
 
 def run_spatial_covar(target, tag, eval_mode):
+    """It is really time consuming."""
     if target == 'DIR':
         features_history = features_future = [None]
     else:
@@ -50,14 +52,14 @@ def run_spatial_covar(target, tag, eval_mode):
 
 
 def run_spatial_covar_all(target, tag, eval_mode):
+    """It is really time consuming."""
     features_history = get_covariates_history_all()
     features_future = get_covariates_future_all()
     features = features_history + features_future
     _run(target, tag, eval_mode, features, with_spatial=True)
 
 
-# run_local_funcs = {'history_future': run,
-#                    'history': run_h,
-#                    'future': run_f}
-run_local_funcs = {'history': run_h,
-                   'future': run_f}
+run_temporal_funcs = {'history_future': run,
+                      'history': run_h,
+                      'future': run_f}
+
