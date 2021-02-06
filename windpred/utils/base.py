@@ -206,9 +206,8 @@ def fill_missing(df):
             r = i + 1
             while r in missing_indices and r < len(dfc.values) - 1:
                 r = r + 1
-            dfc[i] = (dfc[l] + dfc[r]) / 2
+            dfc.at[i] = (dfc[l] + dfc[r]) / 2
         new_df[col] = dfc
-
     print(missing_detail)
 
     return new_df
