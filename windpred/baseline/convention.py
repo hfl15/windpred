@@ -1,5 +1,5 @@
 """
-    Realizations of conventional models.
+    Implementations of conventional models.
 """
 
 import os
