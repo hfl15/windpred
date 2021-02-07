@@ -12,5 +12,5 @@ ipython==7.20.0
 netCDF4==1.5.5.1
 paper==0.2.0
 python-dotenv==0.15.0
-scikit_learn==0.24.1
-tensorflow==2.4.1
+scikit_learn==0.23.1
+tensorflow==2.3.0

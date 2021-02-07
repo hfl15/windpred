@@ -28,7 +28,6 @@ class DefaultConfig(object):
     x_divide_std = True
 
     n_epochs = 1000
-    # n_runs = 2  # TODO: for test
     n_runs = 10
 
     obs_data_path_list, nwp_path = get_files_path()
