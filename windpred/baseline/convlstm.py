@@ -100,19 +100,6 @@ def run_convlstm(station_name_list, dir_log, data_generator_spatial, target, n_e
 
 
 def main(target, mode, eval_mode, config: DefaultConfig, tag, model_name, features_history, features_future):
-    # target_size = config.target_size
-    # period = config.period
-    # window = config.window
-    # train_step = config.train_step
-    # test_step = config.test_step
-    # single_step = config.single_step
-    # norm = config.norm
-    # x_divide_std = config.x_divide_std
-    # n_epochs = config.n_epochs
-    # n_runs = config.n_runs
-    # obs_data_path_list = config.obs_data_path_list
-    # station_name_list = config.station_name_list
-
     dir_log_target = os.path.join(DIR_LOG, tag, target)
     make_dir(dir_log_target)
 
