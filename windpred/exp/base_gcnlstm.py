@@ -1,11 +1,7 @@
-import os
-
 from windpred.utils.model_base import DefaultConfig
 
 from windpred.baseline import gcnlstm
 from windpred.utils import exp_dir
-
-from windpred.expinc.base import *
 
 
 def run(target, tag, eval_mode):

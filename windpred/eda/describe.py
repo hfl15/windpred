@@ -1,14 +1,11 @@
-import sys
-sys.path.append('..')
-
 import os
 import pandas as pd
 import numpy as np
 
-from utilities.utils import tag_path, make_dir, get_station_name, get_missing_tag
-from utilities.prepare_data import DataGeneratorV2, get_files_path
-
-from paper.base import DIR_LOG, DefaultConfig
+from windpred.utils.base import tag_path, make_dir, get_station_name, get_missing_tag
+from windpred.utils.data_parser import DataGenerator
+from windpred.utils.base import DIR_LOG
+from windpred.utils.model_base import DefaultConfig
 
 
 def load_data(path):
@@ -23,26 +20,15 @@ def load_data(path):
 
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
-
-    target_size = DefaultConfig.target_size
-    period = DefaultConfig.period
-    window = DefaultConfig.window
-    train_step = DefaultConfig.train_step
-    test_step = DefaultConfig.test_step
-    single_step = DefaultConfig.single_step
-    n_epochs = DefaultConfig.n_epochs
-    n_runs = DefaultConfig.n_runs
-    obs_data_path_list = DefaultConfig.obs_data_path_list
-    nwp_path = DefaultConfig.nwp_path
-
-    dir_log = os.path.join(DIR_LOG, tag)
+    config = DefaultConfig()
+    dir_log = make_dir(os.path.join(DIR_LOG, tag))
 
     df_obs_list = {}
-    for path in obs_data_path_list:
+    for path in config.obs_data_path_list:
         station_name = get_station_name(path)
         df = load_data(path)
         df_obs_list[station_name] = df
-    df_nwp = load_data(nwp_path)
+    df_nwp = load_data(config.nwp_path)
 
     # missing value
     print("**** check data")
@@ -67,18 +53,21 @@ if __name__ == '__main__':
 
     for key, df in df_obs_list.items():
         print("** station={}".format(key))
-        check_spd(df['SPD10'])
+        check_spd(df['V'])
         check_missing(df)
     print()
     print("** NWP")
-    check_spd(df_nwp['SPD10'])
+    check_spd(df_nwp['V'])
     check_missing(df_nwp)
 
     print()
     print()
     data_generator_list = []
-    for obs_data_path in obs_data_path_list:
-        data_generator = DataGeneratorV2(period, window, path=obs_data_path)
-        data_generator.prepare_data(target_size, train_step=train_step, test_step=test_step, single_step=single_step)
+    for obs_data_path in config.obs_data_path_list:
+        data_generator = DataGenerator(config.period, config.window, path=obs_data_path)
+        data_generator.prepare_data(config.target_size,
+                                    train_step=config.train_step,
+                                    test_step=config.test_step,
+                                    single_step=config.single_step)
         data_generator_list.append(data_generator)
 

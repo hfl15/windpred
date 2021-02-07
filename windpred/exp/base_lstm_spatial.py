@@ -1,6 +1,3 @@
-import os
-
-from windpred.utils.base import tag_path
 from windpred.utils.model_base import DefaultConfig
 from windpred.utils import exp_dir
 

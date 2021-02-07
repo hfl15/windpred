@@ -79,17 +79,8 @@ def select_features_fixed_threshold(dir_log, method='ridge'):
 
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
-
-    target_size = DefaultConfig.target_size
-    period = DefaultConfig.period
-    window = DefaultConfig.period
-    train_step = DefaultConfig.period
-    test_step = DefaultConfig.period
-    single_step = False
-    norm = DefaultConfig.norm
-    x_divide_std = DefaultConfig.x_divide_std
-    n_epochs = DefaultConfig.n_epochs
-    obs_data_path_list = DefaultConfig.obs_data_path_list
+    config = DefaultConfig()
+    config.single_step = False
 
     target = 'V'
     method = 'ridge'
@@ -97,9 +88,12 @@ if __name__ == '__main__':
     make_dir(dir_log)
 
     data_generator_list = []
-    for obs_data_path in obs_data_path_list:
-        data_generator = DataGenerator(period, window, path=obs_data_path, norm=norm, x_divide_std=x_divide_std)
-        data_generator.prepare_data(target_size, train_step=train_step, test_step=test_step, single_step=single_step)
+    for obs_data_path in config.obs_data_path_list:
+        data_generator = DataGenerator(config.period, config.window,
+                                       path=obs_data_path, norm=config.norm, x_divide_std=config.x_divide_std)
+        data_generator.prepare_data(config.target_size,
+                                    train_step=config.train_step, test_step=config.test_step,
+                                    single_step=config.single_step)
         data_generator_list.append(data_generator)
 
     features = get_covariates_future_all()

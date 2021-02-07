@@ -1,6 +1,3 @@
-"""
-    Run the model with the best settings.
-"""
 import os
 import numpy as np
 from multiprocessing import get_context
@@ -53,7 +50,7 @@ def run_best_covar_all(target, tag, eval_mode):
 
 
 """
-    Try a batch of hyper-parameters that used in the primitive paper.
+    Grid search hyper-parameters that used in the primitive paper.
 """
 
 

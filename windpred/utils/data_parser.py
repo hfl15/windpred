@@ -22,8 +22,9 @@ def generate_data(x, y, period, window, target_size, start_idx, end_idx,
             data.append(x[indices])
             targets.append(y[indices])
     else:
-        start_idx = start_idx + window # limitation: window should be times of period to insure the
-                                       # of predictions range from 0 to period-1.
+        # limitation: window should be times of period to insure the of predictions range from 0 to period-1.
+        start_idx = start_idx + window
+
         end_idx = end_idx - period
 
         for i in range(start_idx, end_idx, step):
@@ -86,14 +87,14 @@ class DataGenerator(object):
 
     def prepare_data(self, target_size, train_step=1, test_step=1, single_step=False,
                         contains_pred=True):
-        ## add the predictions of nwp into feature set
+        # add the predictions of nwp into feature set
         # these data will be filled in the following procedure, generate_data()
         nwp_columns = [col for col in self.df.columns if col.startswith('NWP')]
         nwp_data = self.df[nwp_columns].values
         if contains_pred:
             self.x_columns.extend(['NEXT_{}'.format(i) for i in nwp_columns])
 
-        ## prepare training data
+        # prepare training data
         self.x_train, self.y_train = generate_data(
             self.df.values, self.df.values, self.period, self.window, target_size,
             self.train_start_idx, self.train_end_idx, step=train_step, single_step=single_step,
@@ -107,7 +108,7 @@ class DataGenerator(object):
             self.test_start_idx, self.test_end_idx, step=test_step, single_step=single_step,
             nwp_data=nwp_data, delay=contains_pred)
 
-        ## prepare evaluation data
+        # prepare evaluation data
         self.x_eval = self.x_test
         _, self.y_eval = generate_data(
             self.df_origin.values, self.df_origin.values, self.period, self.window, target_size,
