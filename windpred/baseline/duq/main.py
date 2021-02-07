@@ -1,18 +1,3 @@
-"""
-Prerequisites:  keras=2.2.4 and tensorflow=1.7.0.
-Detail:
-    The primitive paper use keras=2.2.4 and tensorflow=1.8.0. In such a condition, calling 'clear_session()' will raise
-    a Segmentation fault. Referring to (https://github.com/keras-team/keras/issues/10399), it seems a bug in the
-    environment keras 2.2 and tensorflow 1.8. The quizzer recommend to degrade kearas or tensorflow.
-    I try:
-        - keras < 2.2, the program meet errors.
-        - tensorflow 1.7, pass.
-    Therefore, my final choice is keras=2.2.4 and tensorflow=1.7.0.
-
-
-
-"""
-
 import os
 import numpy as np
 import keras.backend as K

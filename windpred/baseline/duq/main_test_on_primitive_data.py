@@ -1,5 +1,6 @@
 """
     test duq on the data used in the primitive paper.
+    please download the data from the official website first.
 """
 import pandas as pd
 import os
@@ -11,19 +12,22 @@ from windpred.baseline.duq.helper import load_pkl
 from windpred.baseline.duq.main import DUQPredictor
 from windpred.baseline.duq.config import ParameterConfig
 
+# the data downloaded from the DUQ's website.
+DIR_DATA = '../../../external/Deep_Learning_Weather_Forecasting/data/processed/'
+
 
 def get_training_data():
-    processed_path = '../../../cache/Deep_Learning_Weather_Forecasting/data/processed/'
+    processed_path = DIR_DATA
     train_data = 'train_norm.dict'
     val_data = 'val_norm.dict'
 
-    # [Fanling]
+    # [My Note]
     # keys : ['input_obs', 'input_ruitu', 'ground_truth']
     # train_dict['input_obs'].shape : (1148, 37, 10, 9)
     # train_dict['input_ruitu'].shape : (1148, 37, 10, 29)
     # train_dict['ground_truth'].shape : (1148, 37, 10, 3)
     train_dict = load_pkl(processed_path, train_data)
-    # [Fanling]
+    # [My Note]
     # keys : ['input_obs', 'input_ruitu', 'ground_truth']
     # val_dict['input_obs'].shape : (87, 37, 10, 9)
     # val_dict['input_ruitu'].shape : (87, 37, 10, 29)
@@ -37,8 +41,8 @@ def get_training_data():
     print(train_dict['ground_truth'].shape)
 
     print('After clipping the 9 days, input_obs data shape:')
-    train_dict['input_obs'] = train_dict['input_obs'][:, :-9, :, :]  # [Fanling] shape=(1148, 28, 10, 9)
-    val_dict['input_obs'] = val_dict['input_obs'][:, :-9, :, :]  # [Fanling] shape=(87, 28, 10, 9)
+    train_dict['input_obs'] = train_dict['input_obs'][:, :-9, :, :]  # [My Note] shape=(1148, 28, 10, 9)
+    val_dict['input_obs'] = val_dict['input_obs'][:, :-9, :, :]  # [My Note] shape=(87, 28, 10, 9)
     print(train_dict['input_obs'].shape)
     print(val_dict['input_obs'].shape)
     print(val_dict['ground_truth'].shape)
@@ -47,11 +51,11 @@ def get_training_data():
 
 
 def get_testing_data():
-    processed_path = '../../../cache/Deep_Learning_Weather_Forecasting/data/processed/'
+    processed_path = DIR_DATA
     test_file_name = 'OnlineEveryDay_20181028_norm.dict'
 
     test_file = test_file_name
-    # [fanling]
+    # [My Note]
     # keys = ['input_obs', 'input_ruitu']
     # test_data['input_obs'].shape = (28, 10, 9)
     # test_data['input_ruitu'].shape = (37, 10, 29)
