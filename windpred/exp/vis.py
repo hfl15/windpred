@@ -83,7 +83,7 @@ def plot_dir(tag, config, target, mhstn_root):
         ax_main = plt.subplot(grid[0:2, 0])
         plt.plot(obs, label='TRUTH')
         plt.plot(nwp, label='NWP')
-        plt.plot(mhstn_pred, label='MH-STDNN')
+        plt.plot(mhstn_pred, label='MHSTN')
         plt.legend(loc='best')
         plt.ylabel('Value (degree)')
 
