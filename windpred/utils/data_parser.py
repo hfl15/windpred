@@ -16,15 +16,14 @@ def generate_data(x, y, period, window, target_size, start_idx, end_idx,
     targets = []
 
     if not delay:
-        end_idx = end_idx if step >= period else end_idx-period
+        end_idx = end_idx if step >= period else end_idx - period
         for i in range(start_idx, end_idx, step):
             indices = range(i, i + period)
             data.append(x[indices])
             targets.append(y[indices])
     else:
-        # limitation: window should be times of period to insure the of predictions range from 0 to period-1.
+        # Note: `window` should be times of `period` to insure the predictions range from 0 to period-1.
         start_idx = start_idx + window
-
         end_idx = end_idx - period
 
         for i in range(start_idx, end_idx, step):
@@ -58,10 +57,22 @@ class DataGenerator(object):
         self.loader = DataLoader(self.path)
         self.station_name = self.loader.get_station_name()
         self.df_all = self.loader.get_data()
-        self.df_all['Month'] = self.df_all['DateTime'].apply(lambda x: x.year*100+x.month)
+        self.df_all['Month'] = self.df_all['DateTime'].apply(lambda x: x.year * 100 + x.month)
         self.month_start = self.df_all['Month'][0]
-        self.month_end = self.df_all['Month'][self.df_all.shape[0]-1]
+        self.month_end = self.df_all['Month'][self.df_all.shape[0] - 1]
         self.month_list = np.unique(self.df_all['Month'])
+
+        self.df = None
+        self.df_origin = None
+        self.train_start_idx, self.train_end_idx = None, None
+        self.val_start_idx, self.val_end_idx = None, None
+        self.test_start_idx, self.test_end_idx = None, None
+        self.x_train, self.y_train = None, None
+        self.x_val, self.y_val = None, None
+        self.x_test, self.y_test = None, None
+        self.x_eval, self.y_eval = None, None
+        self.normalizer = None
+        self.x_columns, self.y_columns = None, None
 
         self.set_data()
 
@@ -75,7 +86,8 @@ class DataGenerator(object):
         self.df = self.df[data_filter]
         self.df_origin = self.df.copy()
 
-        (self.train_start_idx, self.train_end_idx), (self.val_start_idx, self.val_end_idx),\
+        (self.train_start_idx, self.train_end_idx), \
+        (self.val_start_idx, self.val_end_idx), \
         (self.test_start_idx, self.test_end_idx) = split_index(self.df.shape[0], self.period)
 
         self.normalizer = None
@@ -85,16 +97,14 @@ class DataGenerator(object):
 
         self.x_columns, self.y_columns = list(self.df.columns), list(self.df.columns)
 
-    def prepare_data(self, target_size, train_step=1, test_step=1, single_step=False,
-                        contains_pred=True):
-        # add the predictions of nwp into feature set
-        # these data will be filled in the following procedure, generate_data()
+    def prepare_data(self, target_size, train_step=1, test_step=1, single_step=False, contains_pred=True):
+        # add NWP predictions into feature set
         nwp_columns = [col for col in self.df.columns if col.startswith('NWP')]
         nwp_data = self.df[nwp_columns].values
         if contains_pred:
             self.x_columns.extend(['NEXT_{}'.format(i) for i in nwp_columns])
 
-        # prepare training data
+        # split data into: train, valid, and test
         self.x_train, self.y_train = generate_data(
             self.df.values, self.df.values, self.period, self.window, target_size,
             self.train_start_idx, self.train_end_idx, step=train_step, single_step=single_step,
@@ -108,7 +118,7 @@ class DataGenerator(object):
             self.test_start_idx, self.test_end_idx, step=test_step, single_step=single_step,
             nwp_data=nwp_data, delay=contains_pred)
 
-        # prepare evaluation data
+        # prepare evaluation data that corresponds to the test split.
         self.x_eval = self.x_test
         _, self.y_eval = generate_data(
             self.df_origin.values, self.df_origin.values, self.period, self.window, target_size,
@@ -184,6 +194,3 @@ class DataGeneratorSpatial(DataGenerator):
         filter_big_wind = (speed >= get_wind_threshold())
 
         return speed, nwp, obs, filter_big_wind
-
-
-

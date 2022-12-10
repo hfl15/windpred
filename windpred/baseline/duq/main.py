@@ -169,7 +169,7 @@ class DUQPredictor(object):
             evaluator_model.append(obs, y_pred, filter_big_wind, key=station_name)
             evaluator_nwp.append(obs, nwp, filter_big_wind, key=station_name)
 
-            np.savetxt(os.path.join(self.dir_log, 'y_pred_{}.txt'.format(station_name)), y_pred)
+            np.savetxt(os.path.join(self.dir_log, "y_pred_test_{}.txt".format(station_name)), y_pred)
 
 
 def run(features_history, features_future, loss='mae', layers=[50, 50]):

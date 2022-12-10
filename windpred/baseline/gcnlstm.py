@@ -161,5 +161,5 @@ def main(target, mode, eval_mode, config, tag, model_name, features_history, fea
                                                model_name))
     elif mode == 'reduce':
         csv_result_list = ['metrics_model_{}.csv'.format(model_name), 'metrics_nwp_{}.csv'.format(model_name)]
-        reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list)
+        reduce(csv_result_list, dir_log_target, n_runs, station_name_list)
 

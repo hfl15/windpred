@@ -62,7 +62,7 @@ def main(mode, config: DefaultConfig, eval_mode, file_exp_in, tag_file_list):
             csv_result_list.append(csv)
             csv = 'metrics_nwp.csv' if tag_file is None else 'metrics_nwp_{}.csv'.format(tag_file)
             csv_result_list.append(csv)
-        reduce(csv_result_list, target, dir_log_target, config.n_runs, config.station_name_list)
+        reduce(csv_result_list, dir_log_target, config.n_runs, config.station_name_list)
 
 
 def main_old(mode, eval_mode, file_exp_in, tag_file_list):

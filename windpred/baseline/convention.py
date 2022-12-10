@@ -199,7 +199,7 @@ def main(tag, config: DefaultConfig, target, mode, eval_mode, model_name='gbrt',
     elif mode.startswith('reduce'):
         if csv_result_list is None:
             csv_result_list = ['metrics_model.csv', 'metrics_nwp.csv']
-        reduce(csv_result_list, target, dir_log_target, config.n_runs, config.station_name_list)
+        reduce(csv_result_list, dir_log_target, config.n_runs, config.station_name_list)
 
 
 

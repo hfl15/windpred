@@ -12,8 +12,8 @@ from windpred.exproll.base import eval_mode
 if __name__ == '__main__':
     tag = tag_path(os.path.abspath(__file__), 2)
 
-    target = 'V'
-    main(tag, DefaultConfig(), DIR_LOG, eval_mode)
+    target = 'VX'
+    main(target, tag, DefaultConfig(), DIR_LOG, eval_mode)
 
 
 

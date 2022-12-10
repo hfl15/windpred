@@ -10,7 +10,7 @@ if __name__ == '__main__':
     tag = get_tag(__file__)
 
     target = 'V'
-    main(tag, DefaultConfig(), DIR_LOG, eval_mode)
+    main(target, tag, DefaultConfig(), DIR_LOG, eval_mode)
 
 
 

@@ -32,7 +32,7 @@ def main_spatial(target, mode, eval_mode, config: DefaultConfig, tag, func, csv_
                       lambda dir_log_curr:
                       func(config.station_name_list, dir_log_curr, data_generator_spatial, target, config.n_epochs))
     elif mode.startswith('reduce') and csv_result_list is not None:
-        reduce(csv_result_list, target, dir_log_target, config.n_runs, config.station_name_list)
+        reduce(csv_result_list, dir_log_target, config.n_runs, config.station_name_list)
     elif mode.startswith('clear'):
         paths = [p for p in os.listdir(dir_log_target) if not p.endswith('.csv')]
         for p in paths:
@@ -58,7 +58,7 @@ def main_spatial_duq(target, mode, eval_mode, config: DefaultConfig, tag, func, 
                       lambda dir_log_curr:
                       func(config, dir_log_curr, data_generator_spatial, target))
     elif mode.startswith('reduce') and csv_result_list is not None:
-        reduce(csv_result_list, target, dir_log_target, config.n_runs, config.station_name_list)
+        reduce(csv_result_list, dir_log_target, config.n_runs, config.station_name_list)
     elif mode.startswith('clear'):
         paths = [p for p in os.listdir(dir_log_target) if not p.endswith('.csv')]
         for p in paths:

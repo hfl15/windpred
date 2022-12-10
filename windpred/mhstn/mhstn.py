@@ -337,7 +337,7 @@ def main(target, mode, eval_mode, config, tag, features_history, features_future
                           station_name_list, dir_log_curr, data_generator_spatial, target, n_epochs, features_history,
                           features_future))
     elif mode.startswith('reduce'):
-        reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list)
+        reduce(csv_result_list, dir_log_target, n_runs, station_name_list)
 
     else:
         raise ValueError("mode = {} can not be found!".format(mode))

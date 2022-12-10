@@ -189,21 +189,15 @@ def run(data_generator_list, cls_model, dir_log, target, n_epochs,
     return time_training, time_inference
 
 
-def reduce(csv_result_list, target, dir_log_target, n_runs, station_name_list):
+def reduce(csv_result_list, dir_log_target, n_runs, station_name_list):
     for wid in range(TESTING_SLIDING_WINDOW, len(MONTH_LIST)):
         dir_log_exp = os.path.join(dir_log_target, str(MONTH_LIST[wid]))
-        if target == 'DIR':
-            reduce_multiple_runs_dir(dir_log_exp, csv_result_list, n_runs, station_name_list)
-        else:
-            reduce_multiple_runs(dir_log_exp, csv_result_list, n_runs, station_name_list)
+        reduce_multiple_runs(dir_log_exp, csv_result_list, n_runs, station_name_list)
 
     csv_list_mean = ['{}_agg_mean.csv'.format(f.split('.')[0]) for f in csv_result_list]
     csv_list_std = ['{}_agg_std.csv'.format(f.split('.')[0]) for f in csv_result_list]
     csv_list = csv_list_mean + csv_list_std
-    if target == 'DIR':
-        reduce_multiple_splits_dir(dir_log_target, csv_list)
-    else:
-        reduce_multiple_splits(dir_log_target, csv_list)
+    reduce_multiple_splits(dir_log_target, csv_list)
 
 
 """
@@ -218,20 +212,27 @@ def batch_run(n_runs, dir_log, func):
         func(dir_log_curr)
     
 
-def reduce_multiple_runs(dir_log, csv_list, n_runs, station_name_list, columns=['all_rmse', 'big_rmse', 'small_rmse']):
+def reduce_multiple_runs(dir_log, csv_list, n_runs, station_name_list, metric_columns=None):
+    if metric_columns is None:  # process all columns that may be evaluation metrics.
+        df = pd.read_csv(os.path.join(dir_log, str(0), 'evaluate', csv_list[0]), index_col=0)
+        metric_columns = []
+        for col, dt in zip(df.columns, df.dtypes):
+            if dt == np.float:
+                metric_columns.append(col)
+
     for csv in csv_list:
         df_list = []
         for r in range(n_runs):
             df = pd.read_csv(os.path.join(dir_log, str(r), 'evaluate', csv), index_col=0)
             df_list.append(df)
-        df_mean = pd.DataFrame(columns=columns)
-        df_std = pd.DataFrame(columns=columns)
+        df_mean = pd.DataFrame(columns=metric_columns)
+        df_std = pd.DataFrame(columns=metric_columns)
         for station_name in station_name_list:
             df_reduced = {}
-            for col in columns:
+            for col in metric_columns:
                 df_reduced[col] = []
             for r in range(n_runs):
-                for col in columns:
+                for col in metric_columns:
                     df_reduced[col].append(df_list[r].loc[station_name, col])
             df_reduced = pd.DataFrame(df_reduced)
             mean = pd.DataFrame(df_reduced.mean().to_dict(), index=[station_name])
@@ -244,11 +245,6 @@ def reduce_multiple_runs(dir_log, csv_list, n_runs, station_name_list, columns=[
         df_std.to_csv(os.path.join(dir_log, '{}_agg_std.csv'.format(csv.split('.')[0])))
 
     print("Finish to reduce the results below the directory {}".format(dir_log))
-
-
-def reduce_multiple_runs_dir(dir_log, csv_list, n_runs, station_name_list):
-    columns = {'all_mae', 'big_mae', 'small_mae'}
-    reduce_multiple_runs(dir_log, csv_list, n_runs, station_name_list, columns)
 
 
 """
@@ -270,30 +266,40 @@ def get_month_list(eval_mode, wid):
     return months
 
 
-def reduce_multiple_splits(path, csvf_list, col_name='all_rmse'):
+def reduce_multiple_splits(path, csvf_list, metric_columns=None):
     """
     Example:
         path = "cache/aaai21/aaai21_mhstn_covar_self/V"
         csvf_list = ['{}_agg_mean.csv'.format(f.split('.')[0]) for f in CSV_LIST]
     :param path:
     :param csvf_list:
-    :param col_name:
+    :param metric_columns:
     :return:
     """
-    for csvf in csvf_list:
-        dir_list = sorted([d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))])
-        df_list = []
-        for month in dir_list:
-            df = pd.read_csv(os.path.join(path, month, csvf), index_col=0)
-            df = df[col_name]
-            df_list.append(df)
-        dfc = pd.concat(df_list, axis=1, keys=dir_list)
-        dfc.to_csv(os.path.join(path, csvf))
-        print("Finish to processing {}".format(csvf))
+    month_folder_list = sorted([d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))])
 
+    if metric_columns is None:
+        month = month_folder_list[0]
+        csvf = csvf_list[0]
+        df = pd.read_csv(os.path.join(path, month, csvf), index_col=0)
+        metric_columns = []
+        for col, dt in zip(df.columns, df.dtypes):
+            if dt == np.float:
+                metric_columns.append(col)
 
-def reduce_multiple_splits_dir(path, csvf_list, col_name='all_mae'):
-    reduce_multiple_splits(path, csvf_list, col_name)
+    def _reduce(col_name):
+        for csvf in csvf_list:
+            df_list = []
+            for month in month_folder_list:
+                df = pd.read_csv(os.path.join(path, month, csvf), index_col=0)
+                df = df[col_name]
+                df_list.append(df)
+            dfc = pd.concat(df_list, axis=1, keys=month_folder_list)
+            dfc.to_csv(os.path.join(path, f"{csvf.split('.')[0]}-{col_name}.csv"))
+            print("Finish to processing {}".format(csvf))
+
+    for col_name in metric_columns:
+        _reduce(col_name)
 
 
 
